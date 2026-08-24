@@ -1,0 +1,10 @@
+﻿# Ticket index (project/)
+
+This file indexes governance tickets without taking ownership of
+project/README.md, which may belong to an analysis generator.
+
+<!-- AUTO:TICKET_INDEX:START -->
+| Ticket ID | Spec | Preprompt | Human input | Agent plans | Agent logs | Changelog |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **ticket-001** | [README.md](./ticket-001/README.md) | [preprompt.md](./ticket-001/preprompt.md) | - | [i-gemini.md](./ticket-001/ai-gemini.md) | [i-gemini-logs.txt](./ticket-001/ai-gemini-logs.txt) | [changelog.md](./ticket-001/changelog.md) |
+<!-- AUTO:TICKET_INDEX:END -->

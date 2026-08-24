@@ -1,0 +1,68 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-001",
+  "summary": "Bootstrap Standard Operating Procedure (SOP) standard and sync runtime",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P0",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-001/**", "TODO.md", "project/TICKETS.md",
+    "spec/**", "schemas/**", "profiles/**", "examples/**",
+    "src/**", "tests/**", "docs/**", "pyproject.toml"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md", ".governance/**", "AGENTS.md",
+    "README.md", "CHANGELOG.md", "VERSION", ".github/**", "project.sh",
+    "project.bat", "project/governance-check.*", "project/new-ticket.sh",
+    "project/readme.sh", "scripts/runtime.sh"
+  ],
+  "stacks": ["python"],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "4ebe24a342e65428ceaa62fa6678837052fe415b",
+    "targetBranch": "main",
+    "outcome": "A complete SOP governance standard, repository synchronization runtime, commit-trigger enforcement, and dual-model LLM benchmarking specification.",
+    "nonGoals": [
+      "Implement unconstrained autonomous commit execution without human supervision",
+      "Bypass validator-agent quality gates or merge direct to main without checks"
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 15,
+      "maxAffectedComponents": 5,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 2
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Define SOP as formal procedural contracts with automated scanner, repo sync engine, commit triggers, and cross-model validation.",
+      "components": [
+        {"name": "sop-contracts", "paths": ["spec/**", "schemas/**"]},
+        {"name": "conformance-runtime", "paths": ["src/**", "tests/**", "pyproject.toml"]},
+        {"name": "sop-guidance", "paths": ["docs/**"]}
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "Introduce wellmanifest.sop/v1 specification format",
+        "Introduce SOP scanner and repository synchronization engine"
+      ],
+      "dataChanges": [
+        "Formalize step-by-step SOP execution schema",
+        "Define audit receipts and drift metrics for repositories"
+      ],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Discard unmerged ticket branch and revert to baseline."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {"criterion": "AC-04", "commands": ["python -m unittest discover -s tests -v"], "evidence": "project/ticket-001/ai-gemini-logs.txt"},
+      {"criterion": "AC-06", "commands": ["python .governance/governance_check.py --root . --manifest .governance/manifest.json --lock .governance/manifest.lock.json --stack-profiles .governance/stack-profiles.json"], "evidence": "project/ticket-001/ai-gemini-logs.txt"}
+    ]
+  }
+}
