@@ -1,0 +1,129 @@
+procedures:
+  - id: sop-new-ticket
+    title: "Procedura Tworzenia i Inicjalizacji Ticketu Bounded Intent"
+    version: "1.0.0"
+    domain: "wellmanifest/governance"
+    philosophy: "Autonomia moduluje, Automatyka generuje"
+    preconditions:
+      - "Repozytorium posiada zainstalowany standard wellmanifest/new-project"
+      - "Katalog roboczy nie ma niezatwierdzonych zmian (clean git working tree)"
+    roles:
+      executor: "Agent LLM lub Developer"
+      auditor: "Bramka governance-check"
+      subactor: "subactor/validator-agent"
+    steps:
+      - stepNumber: 1
+        name: "Alokacja ID i Daty Ticketu"
+        instruction: "Uruchom zarządczy skrypt new-ticket z podaniem tytułu, workstreamu i bieżącej daty (YYYY-MM-DD)."
+        actionType: "deterministic_automation"
+        command: "./project/new-ticket.sh --title '{TITLE}' --workstream '{WORKSTREAM}' --date '{DATE}'"
+        requiredEvidence: "project/ticket-{NNN}/README.md"
+        postcondition: "Utworzony unikalny katalog project/ticket-{NNN} z wpisem w project/TICKETS.md"
+      - stepNumber: 2
+        name: "Definicja Bounded Intent"
+        instruction: "Wypełnij plik intent.json deklarując ścisłe allowedPaths, forbiddenPaths, złożoność (budżet) oraz acceptedBaseSha."
+        actionType: "llm_modulation"
+        requiredEvidence: "project/ticket-{NNN}/intent.json"
+        postcondition: "intent.json jest poprawny semantycznie i zgodny ze schematem new-project.intent/v3"
+      - stepNumber: 3
+        name: "Utworzenie Dedykowanego Brancha / Worktree"
+        instruction: "Przełącz się na dedykowany branch ticket/{NNN}-{SLUG} lub utwórz odizolowany git worktree."
+        actionType: "deterministic_automation"
+        command: "git checkout -b ticket/{NNN}-{SLUG}"
+        requiredEvidence: "git branch --show-current"
+        postcondition: "Bieżący branch odpowiada zarezerwowanemu ticketowi"
+      - stepNumber: 4
+        name: "Walidacja Baseline Governance"
+        instruction: "Uruchom lokalną bramkę governance-check w celu weryfikacji spójności bazy."
+        actionType: "validation_check"
+        command: "./project/governance-check.sh"
+        requiredEvidence: "GOV-PASS"
+        postcondition: "Brak błędów governance (0 errors, 0 warnings)"
+
+  - id: sop-subactor-repair
+    title: "Procedura Pierwszeństwa Naprawy Błędów przez Subactora"
+    version: "1.0.0"
+    domain: "wellmanifest/subactor"
+    philosophy: "Autonomia moduluje, Automatyka generuje"
+    preconditions:
+      - "Wykryto błąd kompilacji, testów, lintu lub naruszenie reguły governance"
+    roles:
+      executor: "Autonomiczny Subactor"
+      auditor: "subactor/validator-agent"
+      subactor: "subactor/repair"
+    steps:
+      - stepNumber: 1
+        name: "Natychmiastowe Wstrzymanie Nowych Prac"
+        instruction: "Zablokuj implementację nowych funkcjonalności. Zarejestruj wykryte błędy jako incydent do natychmiastowej naprawy."
+        actionType: "deterministic_automation"
+        requiredEvidence: "project/ticket-{NNN}/ai-*-logs.txt"
+        postcondition: "Stan realizacji oznaczony jako BLOCKED_ON_ERROR dopóki problem nie zostanie rozwiązany"
+      - stepNumber: 2
+        name: "Autonomiczne Uruchomienie Subactora Naprawczego"
+        instruction: "Zleć subactorowi zdiagnozowanie i wygenerowanie minimalnego patcha naprawczego ściśle ograniczonego do zakresu błędu."
+        actionType: "subactor_repair"
+        command: "python -m subactor.repair --ticket ticket-{NNN} --error-log {ERROR_LOG}"
+        requiredEvidence: "remediation receipt / git diff"
+        postcondition: "Wprowadzono minimalną poprawkę usuwającą przyczynę błędu"
+      - stepNumber: 3
+        name: "Weryfikacja Deterministyczna"
+        instruction: "Uruchom pełny zestaw testów oraz bramkę governance w celu potwierdzenia usunięcia usterki i braku regresji."
+        actionType: "validation_check"
+        command: "./project/governance-check.sh && pytest"
+        requiredEvidence: "GOV-PASS and test pass receipt"
+        postcondition: "Wszystkie testy i bramki zwracają status zielony"
+
+  - id: sop-validator-dispatch
+    title: "Procedura Niezależnej Walidacji PR przez Validator-Agent"
+    version: "1.0.0"
+    domain: "subactor/validator"
+    philosophy: "Autonomia moduluje, Automatyka generuje"
+    preconditions:
+      - "Prace nad ticketem zakończone, stan VALIDATION lub PUBLICATION"
+      - "Otwarty Pull Request powiązany z ticketem"
+    roles:
+      executor: "Agent wykonawczy"
+      auditor: "subactor/validator-agent"
+      subactor: "subactor/validator-agent"
+    steps:
+      - stepNumber: 1
+        name: "Zamrożenie Head SHA (Publication Freeze)"
+        instruction: "Pobierz i utrwal bieżący head SHA pull requesta. Bezwzględny zakaz pushowania po freeze."
+        actionType: "deterministic_automation"
+        command: "gh pr view {PR_NUMBER} --json headRefOid"
+        requiredEvidence: "headRefOid"
+        postcondition: "PR HEAD jest niezmienny"
+      - stepNumber: 2
+        name: "Wywołanie Validator-Agent"
+        instruction: "Uruchom niezależną walidację validator-agent na zamrożonym HEAD."
+        actionType: "deterministic_automation"
+        command: "./bin/dispatch-direct-pr.sh --owner {ORG} --name {REPO} --pr {PR_NUMBER} --ticket ticket-{NNN} --wait-checks --merge --watch"
+        requiredEvidence: "validator-receipt.json"
+        postcondition: "Otrzymano niezależny attestation receipt zatwierdzający zmiany"
+
+  - id: sop-cross-sync
+    title: "Procedura Audytu i Synchronizacji Standardów w Ekosystemie"
+    version: "1.0.0"
+    domain: "wellmanifest/sop"
+    philosophy: "Autonomia moduluje, Automatyka generuje"
+    preconditions:
+      - "Dostęp do repozytoriów organizacji w katalogu fork lub przez GitHub API"
+    roles:
+      executor: "SOP CLI Runtime"
+      auditor: "SOP Differ & Policy Validator"
+      subactor: "subactor/repair"
+    steps:
+      - stepNumber: 1
+        name: "Skanowanie Repozytoriów Ekosystemu"
+        instruction: "Przeskanuj docelowe organizacje i zidentyfikuj rozbieżności z wzorcem wellmanifest."
+        actionType: "deterministic_automation"
+        command: "sop scan --org wellmanifest,subactor,semcod,if-uri"
+        requiredEvidence: "sop-scan-report.json"
+        postcondition: "Wygenerowany raport rozbieżności dla każdego repozytorium"
+      - stepNumber: 2
+        name: "Automatyczna Aplikacja Poprawek (Deterministyczna)"
+        instruction: "Zastosuj reguły naprawcze (np. daty w ticketach, aktualne szablony, pre-commit hooki) za pomocą patchera."
+        actionType: "deterministic_automation"
+        command: "sop apply --all --dry-run=false"
+        requiredEvidence: "sop-sync-receipt.json"
+        postcondition: "Wszystkie repozytoria zaktualizowane do najnowszego standardu"

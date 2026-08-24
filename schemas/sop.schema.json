@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wellmanifest.com/schemas/sop/v1.json",
+  "title": "StandardOperatingProcedure",
+  "type": "object",
+  "required": ["id", "title", "version", "domain", "philosophy", "steps"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^sop-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "philosophy": {
+      "type": "string",
+      "default": "Autonomia moduluje, Automatyka generuje"
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "roles": {
+      "type": "object",
+      "properties": {
+        "executor": { "type": "string" },
+        "auditor": { "type": "string" },
+        "subactor": { "type": "string" }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["stepNumber", "name", "instruction", "actionType"],
+        "properties": {
+          "stepNumber": { "type": "integer", "minimum": 1 },
+          "name": { "type": "string" },
+          "instruction": { "type": "string" },
+          "actionType": {
+            "type": "string",
+            "enum": ["deterministic_automation", "llm_modulation", "human_gate", "subactor_repair", "validation_check"]
+          },
+          "command": { "type": "string" },
+          "requiredEvidence": { "type": "string" },
+          "postcondition": { "type": "string" },
+          "onFailure": {
+            "type": "object",
+            "required": ["action"],
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["abort", "invoke_subactor", "retry", "escalate_to_human"]
+              },
+              "fallbackProcedure": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
