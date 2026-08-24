@@ -24,7 +24,7 @@
   "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
-    "acceptedBaseSha": "4ebe24a342e65428ceaa62fa6678837052fe415b",
+    "acceptedBaseSha": "cc6e4a4a5ad734143e77581558bc45730e1b71e0",
     "targetBranch": "main",
     "outcome": "A complete SOP governance standard, repository synchronization runtime, commit-trigger enforcement, and dual-model LLM benchmarking specification.",
     "nonGoals": [

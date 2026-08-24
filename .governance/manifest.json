@@ -15,16 +15,17 @@
   "coordination": {
     "integration": {
       "requiredForPaths": [
+        "spec/**",
+        "schemas/**",
+        "profiles/**",
+        "examples/**",
+        "src/**",
+        "tests/**",
+        "docs/**",
         "package.json",
-        "pyproject.toml",
         "go.mod",
         "Cargo.toml",
-        "pom.xml",
-        "operations/**",
-        "events/**",
-        "error/**",
-        "models/**",
-        "proto/**"
+        "pom.xml"
       ],
       "workstream": "integration"
     },
@@ -34,17 +35,22 @@
     "workstreams": {
       "application": {
         "ownedPaths": [
-          "src/**",
           "app/**",
-          "lib/**",
-          "test/**",
-          "tests/**"
+          "lib/**"
         ]
       },
       "governance": {
         "ownedPaths": [
+          ".aider.conf.yml",
+          ".cursor/rules/**",
+          ".githooks/**",
+          ".github/copilot-instructions.md",
+          ".github/workflows/new-project-governance.yml",
+          ".gitignore",
           ".governance/**",
           "AGENTS.md",
+          "CLAUDE.md",
+          "GEMINI.md",
           "README.md",
           "TODO.md",
           "CHANGELOG.md",
@@ -53,7 +59,10 @@
           "project.sh",
           "project.bat",
           "project/**",
-          "scripts/runtime.sh"
+          "pyproject.toml",
+          "scripts/install-agent-hosts.sh",
+          "scripts/runtime.sh",
+          "worktree-guard.yaml"
         ]
       },
       "infrastructure": {
@@ -68,17 +77,17 @@
       "integration": {
         "ownedPaths": [
           "VERSION",
+          "spec/**",
+          "schemas/**",
+          "profiles/**",
+          "examples/**",
+          "src/**",
+          "tests/**",
           "package.json",
-          "pyproject.toml",
           "go.mod",
           "Cargo.toml",
           "pom.xml",
-          "docs/**",
-          "operations/**",
-          "events/**",
-          "error/**",
-          "models/**",
-          "proto/**"
+          "docs/**"
         ]
       },
       "interfaces": {
@@ -137,6 +146,9 @@
       }
     },
     "publicInterfacePaths": [
+      "spec/**",
+      "schemas/**",
+      "profiles/**",
       "api/**",
       "sdk/**",
       "src/public/**"
