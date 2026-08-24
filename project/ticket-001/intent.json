@@ -11,7 +11,7 @@
   "allowedPaths": [
     "project/ticket-001/**", "TODO.md", "project/TICKETS.md",
     "spec/**", "schemas/**", "profiles/**", "examples/**",
-    "src/**", "tests/**", "docs/**", "pyproject.toml"
+    "src/**", "tests/**", "docs/**"
   ],
   "forbiddenPaths": [
     "project/ticket-*/user-*.md", ".governance/**", "AGENTS.md",
@@ -24,7 +24,7 @@
   "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
-    "acceptedBaseSha": "cc6e4a4a5ad734143e77581558bc45730e1b71e0",
+    "acceptedBaseSha": "24344553ac20cee39c635e20f836a334501f5b9d",
     "targetBranch": "main",
     "outcome": "A complete SOP governance standard, repository synchronization runtime, commit-trigger enforcement, and dual-model LLM benchmarking specification.",
     "nonGoals": [
@@ -44,7 +44,7 @@
       "decision": "Define SOP as formal procedural contracts with automated scanner, repo sync engine, commit triggers, and cross-model validation.",
       "components": [
         {"name": "sop-contracts", "paths": ["spec/**", "schemas/**"]},
-        {"name": "conformance-runtime", "paths": ["src/**", "tests/**", "pyproject.toml"]},
+        {"name": "conformance-runtime", "paths": ["src/**", "tests/**"]},
         {"name": "sop-guidance", "paths": ["docs/**"]}
       ],
       "responsibilityChanges": false,
