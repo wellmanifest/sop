@@ -17,12 +17,12 @@ Define the Standard Operating Procedure (SOP) standard for WellManifest ecosyste
 
 ## Acceptance criteria
 
-- [ ] AC-01: Full wellmanifest/new-project governance baseline established and locked.
-- [ ] AC-02: SOP DSL and schema defined in spec/ and schemas/.
-- [ ] AC-03: SOP scanner and synchronization runtime implemented in src/.
-- [ ] AC-04: Test suites covering SOP verification and schema validation pass.
-- [ ] AC-05: Dual-LLM benchmarking guidelines and workflow documented in docs/.
-- [ ] AC-06: Local governance-check passes with zero errors.
+- [x] AC-01: Full wellmanifest/new-project governance baseline established and locked.
+- [x] AC-02: SOP DSL and schema defined in spec/ and schemas/.
+- [x] AC-03: SOP scanner and synchronization runtime implemented in src/.
+- [x] AC-04: Test suites covering SOP verification and schema validation pass.
+- [x] AC-05: Dual-LLM benchmarking guidelines and workflow documented in docs/.
+- [x] AC-06: Local governance-check passes with zero errors.
 
 ## Participants
 
