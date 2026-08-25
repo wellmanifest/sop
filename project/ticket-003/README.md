@@ -3,7 +3,7 @@
 - **ID**: ticket-003
 - **Owner**: unresolved:human
 - **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -12,10 +12,10 @@ Restore only the executable Git mode on `.githooks/pre-commit`. Linux CI rejects
 
 ## Acceptance criteria
 
-- [ ] AC-01: The hook content and managed SHA-256 remain unchanged.
-- [ ] AC-02: The Git index records mode `100755` for `.githooks/pre-commit`.
-- [ ] AC-03: Local and hosted governance checks pass with zero errors and warnings.
-- [ ] AC-04: The implementation diff contains only the hook mode change after this plan-only commit.
+- [x] AC-01: The hook content and managed SHA-256 remain unchanged.
+- [x] AC-02: The Git index records mode `100755` for `.githooks/pre-commit`.
+- [x] AC-03: Local governance-check passes with zero errors and warnings; hosted checks are required before trusted merge.
+- [x] AC-04: The implementation diff contains only the hook mode change plus ticket evidence after the plan-only commit.
 
 ## Participants
 

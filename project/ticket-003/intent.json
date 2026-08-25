@@ -24,7 +24,7 @@
   ],
   "stacks": [],
   "dependsOn": [],
-  "conflictsWith": [],
+  "conflictsWith": ["ticket-002"],
   "integrationTicket": null,
   "delivery": {
     "acceptedBaseSha": "31f7fc9ec8cca80c0a867e50c75737d8a0a1ba06",

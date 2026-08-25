@@ -25,6 +25,8 @@ Ticket-001 CI fails because `.githooks/pre-commit` lacks executable Git mode on 
 
 - Allocated ticket-003 through the managed allocator in the governance workstream.
 - Recorded the plan-only intent before touching the hook mode.
+- Restored Git index mode `100755` without changing the hook bytes.
+- Moved the ticket to `IN_PROGRESS / PUBLICATION` for hosted checks and trusted delivery.
 
 ## Blockers
 

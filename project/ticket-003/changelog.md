@@ -4,3 +4,4 @@
 
 - Allocated the bounded governance ticket through the managed allocator.
 - Recorded plan and intent before implementation as required by GOV-INTENT-003.
+- Restored executable Git mode on the managed pre-commit hook without changing its content.
