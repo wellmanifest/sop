@@ -1,0 +1,71 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-003",
+  "summary": "Restore the executable Git mode on the managed pre-commit hook",
+  "workstream": "governance",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "regression"
+  },
+  "allowedPaths": [
+    "project/ticket-003/**",
+    "project/TICKETS.md",
+    ".githooks/pre-commit"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".governance/**",
+    ".github/**",
+    "src/**",
+    "tests/**",
+    "spec/**",
+    "schemas/**"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "31f7fc9ec8cca80c0a867e50c75737d8a0a1ba06",
+    "targetBranch": "main",
+    "outcome": "The managed pre-commit hook retains executable Git mode in Linux CI so governance enforcement can run.",
+    "nonGoals": [
+      "Change hook contents or governance policy",
+      "Modify the SOP runtime or ticket-001 implementation"
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 10,
+    "budgets": {
+      "maxImplementationFiles": 1,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Restore only the executable bit already required by the managed host contract.",
+      "components": [
+        {"name": "governance-hook", "paths": [".githooks/pre-commit"]}
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Discard the unmerged implementation commit."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-02",
+        "commands": ["git ls-files --stage .githooks/pre-commit"],
+        "evidence": "project/ticket-003/ai-devin-logs.txt"
+      },
+      {
+        "criterion": "AC-03",
+        "commands": ["project\\governance-check.bat"],
+        "evidence": "project/ticket-003/ai-devin-logs.txt"
+      }
+    ]
+  }
+}
