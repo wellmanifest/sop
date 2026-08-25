@@ -1,7 +1,7 @@
 {
   "schema": "new-project.intent/v3",
   "ticket": "ticket-001",
-  "summary": "Bootstrap Standard Operating Procedure (SOP) standard and sync runtime",
+  "summary": "Publish the SOP v1 foundation, new-ticket procedure, and safe local sync runtime",
   "workstream": "integration",
   "classification": {
     "kind": "FEATURE",
@@ -24,11 +24,12 @@
   "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
-    "acceptedBaseSha": "24344553ac20cee39c635e20f836a334501f5b9d",
+    "acceptedBaseSha": "31f7fc9ec8cca80c0a867e50c75737d8a0a1ba06",
     "targetBranch": "main",
-    "outcome": "A complete SOP governance standard, repository synchronization runtime, commit-trigger enforcement, and dual-model LLM benchmarking specification.",
+    "outcome": "A publishable SOP v1 foundation slice: schema and catalog, canonical new-ticket procedure, safe local synchronization runtime, architecture, and Dual-LLM methodology.",
     "nonGoals": [
       "Implement unconstrained autonomous commit execution without human supervision",
+      "Publish the repair, validator-dispatch, or cross-sync procedures in this foundation slice",
       "Bypass validator-agent quality gates or merge direct to main without checks"
     ],
     "complexity": "L",
@@ -41,7 +42,7 @@
     },
     "architecture": {
       "status": "accepted",
-      "decision": "Define SOP as formal procedural contracts with automated scanner, repo sync engine, commit triggers, and cross-model validation.",
+      "decision": "Publish a bounded SOP foundation with the new-ticket contract, deterministic local conformance runtime, and evaluation methodology; defer the remaining procedures.",
       "components": [
         {"name": "sop-contracts", "paths": ["spec/**", "schemas/**"]},
         {"name": "conformance-runtime", "paths": ["src/**", "tests/**"]},
@@ -49,8 +50,9 @@
       ],
       "responsibilityChanges": false,
       "interfaceChanges": [
-        "Introduce wellmanifest.sop/v1 specification format",
-        "Introduce SOP scanner and repository synchronization engine"
+        "Introduce schemas/sop.schema.json as the wellmanifest.sop/v1 contract",
+        "Introduce spec/sop-procedures.yaml and spec/sop-new-ticket.yaml as the foundation catalog and canonical procedure",
+        "Introduce the local scan, diff, patch, sync, verify, and validate-spec interface"
       ],
       "dataChanges": [
         "Formalize step-by-step SOP execution schema",
@@ -61,8 +63,8 @@
     },
     "runtimeDependencies": [],
     "validation": [
-      {"criterion": "AC-04", "commands": ["python -m unittest discover -s tests -v"], "evidence": "project/ticket-001/ai-gemini-logs.txt"},
-      {"criterion": "AC-06", "commands": ["python .governance/governance_check.py --root . --manifest .governance/manifest.json --lock .governance/manifest.lock.json --stack-profiles .governance/stack-profiles.json"], "evidence": "project/ticket-001/ai-gemini-logs.txt"}
+      {"criterion": "AC-04", "commands": ["python -m unittest discover -s tests -v"], "evidence": "project/ticket-001/ai-subactor-logs.txt"},
+      {"criterion": "AC-06", "commands": ["project\\governance-check.bat"], "evidence": "project/ticket-001/ai-subactor-logs.txt"}
     ]
   }
 }

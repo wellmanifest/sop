@@ -6,5 +6,5 @@ project/README.md, which may belong to an analysis generator.
 <!-- AUTO:TICKET_INDEX:START -->
 | Ticket ID | Spec | Preprompt | Human input | Agent plans | Agent logs | Changelog |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **ticket-001** | [`README.md`](./ticket-001/README.md) | [`preprompt.md`](./ticket-001/preprompt.md) | - |  [`ai-gemini.md`](./ticket-001/ai-gemini.md) |  [`ai-gemini-logs.txt`](./ticket-001/ai-gemini-logs.txt) | [`changelog.md`](./ticket-001/changelog.md) |
+| **ticket-001** | [README.md](./ticket-001/README.md) | [preprompt.md](./ticket-001/preprompt.md) | - | [ai-gemini.md](./ticket-001/ai-gemini.md), [ai-subactor.md](./ticket-001/ai-subactor.md) | [ai-gemini-logs.txt](./ticket-001/ai-gemini-logs.txt), [ai-subactor-logs.txt](./ticket-001/ai-subactor-logs.txt) | [changelog.md](./ticket-001/changelog.md) |
 <!-- AUTO:TICKET_INDEX:END -->

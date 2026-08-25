@@ -1,54 +1,59 @@
-# Architektura wellmanifest/sop
+# Architecture of wellmanifest/sop
 
-## 1. Wstęp i Filozofia
-System **SOP (Standard Operating Procedure)** realizuje zasadę:
-> **„Autonomia — moduluje, Automatyka — generuje.”**
+## Purpose and boundary
 
-Modele LLM (ChatGPT, Gemini, Claude) są wykorzystywane do wysokopoziomowego podejmowania decyzji, zrozumienia kontekstu biznesowego i modulacji przepływu, natomiast powtarzalne modyfikacje kodu, instalacja szablonów, weryfikacja sum kontrolnych i egzekwowanie bramek są delegowane do **deterministycznych skryptów i automatyki**.
+The repository owns a portable SOP contract and a deterministic **local** conformance runtime. It does not own a daemon, GitHub application, repair model, or validator service. Those capabilities remain in their runtime repositories. The guiding rule is: **autonomy modulates; automation generates**.
 
-`mermaid
-graph TD
-    A[WellManifest Standardy SSOT] --> B[SOP Skaner / Differ]
-    B --> C{Wykryto rozbieżności?}
-    C -->|Tak| D[SOP Patcher - Automatyka]
-    C -->|Nie| E[Repozytoria Zgodne]
-    D --> F[Git Commit Trigger / Hook]
-    F --> G[subactor/validator-agent]
-    G --> H[Zatwierdzenie i Merge]
-`
+```mermaid
+graph LR
+  S[Local standard checkout] --> A[Scanner]
+  T[Local target repositories] --> A
+  A --> D[Deterministic diff]
+  D --> P[Reviewed patch plan]
+  P -->|default| R[Dry-run receipt]
+  P -->|explicit --write| W[Atomic local copy]
+  W --> V[Checksum verification]
+  V --> C[Local integration command contract]
+```
 
-## 2. Główne Komponenty
-1. **Specyfikacja Procedur (spec/, schemas/)**:
-   - Definicje procedur operacyjnych w formacie maszynowo-odczytywalnym (JSON Schema / YAML).
-   - Zawierają sztywne warunki wejściowe, sekwencje kroków, dowody wykonania i procedury naprawcze w razie błędu.
-2. **Silnik Skanowania i Synchronizacji (src/sop/)**:
-   - Skaner bada wszystkie repozytoria w organizacji (wellmanifest, subactor, semcod, if-uri).
-   - Patcher automatycznie i deterministycznie nanosi poprawki bez użycia tokenów LLM.
-3. **Commit Triggery i Subactor Priority Gate**:
-   - Githooki oraz reguły wymuszające natychmiastowe zatrzymanie prac i naprawę wykrytych błędów przez subactora w pierwszej kolejności.
-4. **Dual-Model Cross-Validation**:
-   - Protokół testów krzyżowych, w którym dwa różne modele weryfikują nawzajem swoje zachowanie pod kątem ścisłego przestrzegania procedur SOP.
+## SOP contract
 
-# Dual-Model LLM Benchmarking (ChatGPT âź· Gemini)
+Each canonical file in `spec/` is JSON-compatible YAML 1.2 and independently conforms to `schemas/sop.schema.json`. JSON syntax avoids a runtime YAML dependency while retaining YAML compatibility. `wellmanifest.sop/v1` requires:
 
-## Cel
-Wyeliminowanie niejednoznacznoĹ›ci w procedurach operacyjnych (SOP) oraz zapewnienie, ĹĽe modele LLM wykonujÄ… zadania powtarzalnie i bezbĹ‚Ä™dnie bez koniecznoĹ›ci kosztownego douczania wag modelu (fine-tuningu).
+- identity, semantic version, domain, philosophy, roles, and explicit preconditions;
+- sequential numbered steps with action type, evidence, postconditions, and failure action;
+- document-level postconditions;
+- closed objects so misspelled fields fail validation.
 
-## Procedura Badawcza
+`spec/sop-procedures.yaml` is the foundation-slice catalog. In ticket-001 only `sop-new-ticket.yaml` is normative. The repair, validator-dispatch, and cross-sync procedures are explicitly pending a dependent integration slice after ticket-001 is merged and closed.
 
-### Runda 1: ChatGPT jako Wykonawca, Gemini jako Audytor
-1. **Zadanie**: ChatGPT otrzymuje specyfikacjÄ™ procedury (np. spec/sop-new-ticket.yaml) oraz zadanie do zrealizowania.
-2. **Obserwacja**: Gemini monitoruje kaĹĽdy wygenerowany krok, modyfikacjÄ™ plikĂłw i logi weryfikacyjne.
-3. **Ocena zgodnoĹ›ci**:
-   - Czy kolejnoĹ›Ä‡ krokĂłw zostaĹ‚a zachowana?
-   - Czy warunki wstÄ™pne i koĹ„cowe zostaĹ‚y speĹ‚nione?
-   - Czy w przypadku symulowanego bĹ‚Ä™du wykonawca zastosowaĹ‚ reguĹ‚Ä™ pierwszeĹ„stwa subactora?
+## Runtime components
 
-### Runda 2: Gemini jako Wykonawca, ChatGPT jako Audytor
-1. Zamiana rĂłl i powtĂłrzenie tego samego scenariusza.
-2. Zarejestrowanie rĂłĹĽnic w interpretacji tych samych zapisĂłw procedury SOP przez oba modele.
+- `scanner.py` discovers only direct local Git repositories. Both `.git` directories and linked-worktree `.git` files are accepted. It compares regular managed files by SHA-256 and sorts repositories and paths.
+- `engine.py` converts findings into immutable patch operations, reuses managed-path validation, rejects symlink source components, detects template changes after planning, preflights every batch operation, writes each file through a same-directory temporary file plus `os.replace`, and verifies final hashes.
+- `validator.py` enforces the semantic v1 contract without third-party dependencies.
+- `cli.py` exposes `scan`, `diff`, `patch`, `sync`, `verify`, and `validate-spec`. JSON output is stable and machine-readable.
 
-### Runda 3: Synteza WnioskĂłw i Usprawnienie SOP
-1. Zestawienie raportĂłw z obu rund.
-2. Wykrycie sĹ‚Ăłw-kluczy lub instrukcji powodujÄ…cych bĹ‚Ä™dy lub pomijanie krokĂłw.
-3. Doprecyzowanie definicji SOP w spec/.
+## Safety and trust boundaries
+
+The runtime never fetches URLs, calls GitHub, commits, pushes, opens pull requests, or merges. A standard must be a local path; strings containing `://` are rejected. Symlink sources and targets are rejected, writes cannot escape the resolved target repository, and `.git/**` is never a valid managed path.
+
+`sync` is dry-run unless the operator supplies `--write`. Managed paths must be canonical relative POSIX paths and cannot contain `..`, `.git`, drive prefixes, backslashes, or redundant segments. A patch binds the source SHA-256 observed during planning; changing the source invalidates the plan. Before a write batch, every path, source type, and source hash is preflighted, so an invalid later operation cannot allow an earlier write. Each individual replacement is atomic. The batch is not a multi-file transaction: an I/O failure during the write phase can leave earlier files applied. The operator remains responsible for reviewing repository ownership and ticket bounds before `--write`.
+
+## Hook, subactor, and validator integrations
+
+`IntegrationContract` renders argument arrays but intentionally executes nothing:
+
+1. cross-repository hook installation renders `scripts/install-agent-hosts.sh --source <standard> --target <repo>`; in-place activation may call the script without arguments;
+2. repair dispatch points to an authorized `subactor.repair` boundary;
+3. validator dispatch points to protected `dispatch-direct-pr.sh` after exact-head publication freeze.
+
+Rendered commands are not authorization or approval evidence. Networked dispatch, organization-wide installation, PR review, merge, and real model evaluation remain external operations. This ticket does not perform them.
+
+## Failure and rollback
+
+Scanning and planning are read-only. Batch preflight rejects unsafe paths, symlinked source components, and stale hashes before any target write. A failed per-file atomic replacement reports failure and leaves no accepted batch receipt, but earlier files in the same batch may already have been replaced; there is no automatic multi-file rollback. Recovery is a newly reviewed plan from a known prior local standard checkout. The runtime never silently infers or executes rollback.
+
+## Determinism and receipts
+
+Reports omit wall-clock timestamps. Ordering uses normalized path/name keys, summaries are sorted, and content identity uses SHA-256. CLI JSON output is the receipt; callers may persist it in their authorized evidence location. External approval receipts must bind repository, PR, exact HEAD, ticket, and actor and cannot be authored by this runtime.

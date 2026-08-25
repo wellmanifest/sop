@@ -1,0 +1,32 @@
+{
+  "schema": "wellmanifest.sop/v1",
+  "id": "sop-new-ticket",
+  "title": "Allocate a bounded implementation ticket",
+  "version": "1.0.0",
+  "domain": "wellmanifest/governance",
+  "philosophy": "Autonomy modulates; automation generates.",
+  "preconditions": ["The governance manifest and ticket index are readable.", "No active ticket already owns the requested workstream and scope."],
+  "roles": {"executor": "coding-agent", "auditor": "governance-gate"},
+  "steps": [
+    {
+      "stepNumber": 1,
+      "name": "Allocate through the managed script",
+      "instruction": "Run the repository ticket allocator with an explicit title, agent, and workstream; never invent an identifier.",
+      "actionType": "deterministic_automation",
+      "command": "./project/new-ticket.sh --title '{TITLE}' --agent '{AGENT}' --workstream '{WORKSTREAM}'",
+      "requiredEvidence": ["project/TICKETS.md", "project/ticket-{NNN}/intent.json"],
+      "postconditions": ["Exactly one unique ticket directory and index row exist."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 2,
+      "name": "Bound intent before implementation",
+      "instruction": "Record allowed and forbidden paths, accepted base SHA, budgets, outcome, and validation commands.",
+      "actionType": "llm_modulation",
+      "requiredEvidence": ["project/ticket-{NNN}/intent.json"],
+      "postconditions": ["Intent is schema-valid and implementation remains inside its bounds."],
+      "onFailure": {"action": "abort"}
+    }
+  ],
+  "postconditions": ["The ticket is IN_PROGRESS and work proceeds only on a ticket-named branch or worktree."]
+}
