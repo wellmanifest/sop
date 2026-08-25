@@ -1,0 +1,17 @@
+2026-08-25 SESSION_EXECUTION_AUTHORIZATION recorded from the user's instruction to push according to repository standard.
+
+BASELINE
+- PR 1 governance / enforce failed with GOV-AGENT-HOST-005.
+- Linux CI reported `.githooks/pre-commit` as non-executable.
+- Hook content matches the managed SHA-256; repair scope is Git mode only.
+
+IMPLEMENTATION
+- Ticket allocated through project/new-ticket.sh in the governance workstream.
+- Restored index mode from 100644 to 100755 without changing file bytes.
+
+VALIDATION
+- Hook SHA-256 before and after: 73bad0ce8bb2617ba089e9558ccee1a8fdfee3ee580ccd1c13a6e4d3471e3307.
+- git ls-files --stage reports mode 100755.
+- git diff --cached --summary reports only mode change 100644 => 100755 for the hook.
+- project\\governance-check.bat: GOV-PASS, 0 errors, 0 warnings.
+- git diff --check and git diff --cached --check: PASS.
