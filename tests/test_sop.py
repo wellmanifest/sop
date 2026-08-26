@@ -1,54 +1,68 @@
-import unittest
-import os
 import json
-from src.sop.models import SOPDocument, ActionType, FailureAction, DriftFinding
-from src.sop.validator import SOPValidator
-from src.sop.engine import SOPDiffer, SOPPatcher
+import unittest
+from pathlib import Path
 
-class TestSOPEngine(unittest.TestCase):
-    def test_validator_valid_document(self):
-        doc_data = {
-            "id": "sop-test-case",
-            "title": "Test SOP Document",
-            "version": "1.0.0",
-            "domain": "test/domain",
-            "philosophy": "Autonomia moduluje, Automatyka generuje",
-            "steps": [
-                {
-                    "stepNumber": 1,
-                    "name": "Step 1",
-                    "instruction": "Do something",
-                    "actionType": "deterministic_automation",
-                    "command": "echo test"
-                }
-            ]
-        }
-        is_valid, errors = SOPValidator.validate_dict(doc_data)
-        self.assertTrue(is_valid, f"Expected valid, got errors: {errors}")
-        doc = SOPValidator.parse_dict(doc_data)
-        self.assertEqual(doc.id, "sop-test-case")
-        self.assertEqual(len(doc.steps), 1)
-        self.assertEqual(doc.steps[0].action_type, ActionType.DETERMINISTIC_AUTOMATION)
+from src.sop.engine import IntegrationContract, SOPDiffer
+from src.sop.models import DriftFinding
+from src.sop.validator import SCHEMA_ID, SOPValidationError, SOPValidator
 
-    def test_validator_invalid_document(self):
-        doc_data = {
-            "id": "INVALID_ID_FORMAT",
-            "title": "",
-            "steps": []
-        }
-        is_valid, errors = SOPValidator.validate_dict(doc_data)
-        self.assertFalse(is_valid)
-        self.assertGreaterEqual(len(errors), 2)
+ROOT = Path(__file__).resolve().parents[1]
+CANONICAL = ("sop-new-ticket.yaml",)
 
-    def test_differ_summary(self):
+
+class TestSOPContracts(unittest.TestCase):
+    def test_all_canonical_procedures_validate_and_parse(self):
+        for name in CANONICAL:
+            with self.subTest(name=name):
+                data = SOPValidator.load(ROOT / "spec" / name)
+                valid, errors = SOPValidator.validate_dict(data)
+                self.assertTrue(valid, errors)
+                self.assertEqual(SOPValidator.parse_dict(data).schema, SCHEMA_ID)
+
+    def test_rejects_unknown_fields_and_non_sequential_steps(self):
+        data = SOPValidator.load(ROOT / "spec" / CANONICAL[0])
+        data["unexpected"] = True
+        data["steps"][0]["stepNumber"] = 2
+        valid, errors = SOPValidator.validate_dict(data)
+        self.assertFalse(valid)
+        self.assertTrue(any("Unknown" in error for error in errors))
+        self.assertTrue(any("stepNumber" in error for error in errors))
+        with self.assertRaises(SOPValidationError):
+            SOPValidator.parse_dict(data)
+
+    def test_schema_is_json_and_declares_closed_v1_contract(self):
+        schema = json.loads((ROOT / "schemas" / "sop.schema.json").read_text(encoding="utf-8"))
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(schema["properties"]["schema"]["const"], SCHEMA_ID)
+
+    def test_drift_summary_is_stable(self):
         findings = [
-            DriftFinding(repo_name="repo1", rule_id="SOP-GOV-001", severity="ERROR", message="Missing gov", remediation_action="Fix"),
-            DriftFinding(repo_name="repo2", rule_id="SOP-HOOK-001", severity="WARNING", message="Missing hook", remediation_action="Fix")
+            DriftFinding("b", "/b", "R2", "WARNING", "m", "x"),
+            DriftFinding("a", "/a", "R1", "ERROR", "m", "x"),
         ]
         summary = SOPDiffer.calculate_drift_summary(findings)
+        self.assertEqual(list(summary["by_repo"]), ["a", "b"])
         self.assertEqual(summary["total_drifts"], 2)
-        self.assertEqual(summary["by_severity"]["ERROR"], 1)
-        self.assertEqual(summary["by_severity"]["WARNING"], 1)
+
+    def test_integrations_render_commands_without_execution(self):
+        self.assertEqual(
+            IntegrationContract.hook_install_command("standard", "target"),
+            [
+                "./scripts/install-agent-hosts.sh",
+                "--source",
+                "standard",
+                "--target",
+                "target",
+            ],
+        )
+        self.assertEqual(
+            IntegrationContract.subactor_repair_command("ticket-001", "failure.log")[-2:],
+            ["--error-log", "failure.log"],
+        )
+        validator = IntegrationContract.validator_dispatch_command("org", "repo", 7, "ticket-001")
+        self.assertIn("--wait-checks", validator)
+        self.assertIn("--merge", validator)
+
 
 if __name__ == "__main__":
     unittest.main()

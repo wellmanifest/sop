@@ -1,0 +1,58 @@
+2026-08-24 SESSION_EXECUTION_AUTHORIZATION recorded from explicit user instruction.
+Worktree: dedicated sibling checkout sop-ticket-001-todo
+Branch: ticket-001/todo-completion
+Base HEAD: 31f7fc9ec8cca80c0a867e50c75737d8a0a1ba06
+
+BASELINE
+- python -m unittest discover -s tests -v: PASS, 3 tests.
+- project\governance-check.bat in this worktree: FAIL, 51 GOV-SYNC-001.
+- Supervisor confirmed the gate on main before worktree creation was GOV-PASS. The 51 digest mismatches are a local EOL-conversion artifact of worktree creation, not a repository baseline failure. Managed forbidden files and Git configuration were not changed.
+
+IMPLEMENTATION
+- Added closed SOP v1 contract and four canonical procedures.
+- Added deterministic local scan/diff/patch/sync/verify runtime with dry-run default.
+- Added canonical managed-path validation before scanning or target resolution.
+- Fixed source-symlink validation to inspect unresolved source paths and existing parents before resolve.
+- Added whole-batch safety/source-hash preflight, then per-file atomic replacement; multi-file application is explicitly non-transactional.
+- Corrected hook installation rendering to use scripts/install-agent-hosts.sh --source/--target.
+- Added local-only integration command rendering; no command was dispatched externally.
+- Added architecture, Dual-LLM methodology, scenarios, prompts, receipts, scoring, and honest blockers.
+- Added test coverage and corrected control-character/encoding damage in allowed files.
+
+SUPERVISOR REVIEW REMEDIATION
+- Added a real source-symlink test. On this Windows host it is skipped only after WinError 1314 is normalized to PermissionError because symlink privilege is unavailable.
+- Added scanner rejection tests for absolute, parent traversal, .git, drive-prefixed, backslash, and noncanonical managed paths.
+- Added batch preflight regression proving a stale second source leaves the first target unchanged.
+- Updated documentation and ticket evidence to distinguish per-file atomicity from multi-file transactions and to identify the local EOL artifact accurately.
+
+PRE-SPLIT VALIDATION HISTORY
+- Final target-symlink remediation: unresolved target and existing parent components are rejected before resolve; containment is still checked after resolve, and verify uses the same guard.
+- Added an internal-repository target symlink regression test proving apply/verify reject it and the real file remains unchanged.
+- python -m unittest discover -s tests -v: PASS, 15 tests, 2 skipped only for unavailable Windows symlink privilege (source and target symlink creation).
+- python -m ruff check src tests: PASS.
+- Four python -m src.sop.cli validate-spec commands: PASS with valid=true and no errors.
+- git diff --check: PASS; Git emitted only an informational future LF-to-CRLF warning for TODO.md.
+- project\governance-check.bat: FAIL, 52 errors: 51 worktree EOL-induced GOV-SYNC-001 plus real GOV-BUDGET-001.
+- GOV-BUDGET-001 remains blocked: the required changed schema plus four separate public SOP files exceed maxPublicInterfaceChanges=3. The budget was not enlarged. The implementation-file list remains exactly 15 files.
+
+FOUNDATION PUBLICATION SLICE
+- Removed the three newly created untracked procedure files for repair, validator dispatch, and cross-sync after confirming each path was untracked. Their content is deferred to a dependent integration ticket after ticket-001 merge and closure; no ticket-002 was created.
+- Public interface paths are exactly schemas/sop.schema.json, spec/sop-procedures.yaml, and spec/sop-new-ticket.yaml.
+- Narrowed intent, architecture interface changes, acceptance criteria, catalog, tests, docs, TODO, and ticket evidence to the foundation slice.
+- Preflighted every manifest.lock managed path with clean diff, tracked-index, and untracked checks before restoration.
+- The direct forced checkout retained EOL conversion, so exact index payloads were materialized by one `git -c core.autocrlf=false checkout-index --temp` operation and moved into place. No lock or persistent Git configuration changed.
+- Verified all 51 filesystem SHA-256 values against manifest.lock and zero managed-path status entries under the same process-local EOL interpretation.
+- python -m unittest discover -s tests -v: PASS, 15 tests, 2 Windows symlink privilege skips.
+- python -m ruff check src tests: PASS.
+- python -m src.sop.cli validate-spec spec\\sop-new-ticket.yaml: PASS, valid=true, no errors.
+- git diff --check: PASS; informational future LF-to-CRLF warning for TODO.md only.
+- project\\governance-check.bat with process-local core.autocrlf=false (no config mutation): GOV-PASS, 0 errors, 0 warnings.
+- Implementation files: 12 (limit 15). Public interface paths: 3 (limit 3).
+
+EXTERNAL/BLOCKED
+- No organization hook installation, subactor repair dispatch, model benchmark evaluation, direct merge, semantic forbidden managed-file edit, lock edit, or persistent Git configuration change occurred.
+
+PUBLICATION AUTHORIZATION
+- The user's subsequent instruction explicitly authorizes push according to the repository standard.
+- Ticket moved to IN_PROGRESS / PUBLICATION for commit, pull request, exact-head freeze, and trusted validator-agent delivery.
+- Independent pre-publication checks: 15 tests passed with 2 Windows symlink privilege skips; Ruff passed; canonical foundation SOP validation passed; git diff check passed; governance gate passed with 0 errors and 0 warnings.

@@ -1,67 +1,57 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://wellmanifest.com/schemas/sop/v1.json",
-  "title": "StandardOperatingProcedure",
+  "$id": "https://wellmanifest.dev/schemas/sop-v1.schema.json",
+  "title": "WellManifest Standard Operating Procedure v1",
   "type": "object",
-  "required": ["id", "title", "version", "domain", "philosophy", "steps"],
+  "additionalProperties": false,
+  "required": ["schema", "id", "title", "version", "domain", "philosophy", "preconditions", "roles", "steps", "postconditions"],
   "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^sop-[a-z0-9-]+$"
-    },
-    "title": {
-      "type": "string"
-    },
-    "version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
-    "domain": {
-      "type": "string"
-    },
-    "philosophy": {
-      "type": "string",
-      "default": "Autonomia moduluje, Automatyka generuje"
-    },
-    "preconditions": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
+    "schema": {"const": "wellmanifest.sop/v1"},
+    "id": {"type": "string", "pattern": "^sop-[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "domain": {"type": "string", "minLength": 1},
+    "philosophy": {"type": "string", "minLength": 1},
+    "preconditions": {"$ref": "#/$defs/nonEmptyStrings"},
     "roles": {
       "type": "object",
-      "properties": {
-        "executor": { "type": "string" },
-        "auditor": { "type": "string" },
-        "subactor": { "type": "string" }
-      }
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
     },
     "steps": {
       "type": "array",
       "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": ["stepNumber", "name", "instruction", "actionType"],
-        "properties": {
-          "stepNumber": { "type": "integer", "minimum": 1 },
-          "name": { "type": "string" },
-          "instruction": { "type": "string" },
-          "actionType": {
-            "type": "string",
-            "enum": ["deterministic_automation", "llm_modulation", "human_gate", "subactor_repair", "validation_check"]
-          },
-          "command": { "type": "string" },
-          "requiredEvidence": { "type": "string" },
-          "postcondition": { "type": "string" },
-          "onFailure": {
-            "type": "object",
-            "required": ["action"],
-            "properties": {
-              "action": {
-                "type": "string",
-                "enum": ["abort", "invoke_subactor", "retry", "escalate_to_human"]
-              },
-              "fallbackProcedure": { "type": "string" }
-            }
+      "items": {"$ref": "#/$defs/step"}
+    },
+    "postconditions": {"$ref": "#/$defs/nonEmptyStrings"}
+  },
+  "$defs": {
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stepNumber", "name", "instruction", "actionType", "requiredEvidence", "postconditions", "onFailure"],
+      "properties": {
+        "stepNumber": {"type": "integer", "minimum": 1},
+        "name": {"type": "string", "minLength": 1},
+        "instruction": {"type": "string", "minLength": 1},
+        "actionType": {
+          "enum": ["deterministic_automation", "llm_modulation", "human_gate", "subactor_repair", "validation_check"]
+        },
+        "command": {"type": "string", "minLength": 1},
+        "requiredEvidence": {"$ref": "#/$defs/nonEmptyStrings"},
+        "postconditions": {"$ref": "#/$defs/nonEmptyStrings"},
+        "onFailure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action"],
+          "properties": {
+            "action": {"enum": ["abort", "invoke_subactor", "retry", "escalate_to_human"]},
+            "fallbackProcedure": {"type": "string", "pattern": "^sop-[a-z0-9]+(?:-[a-z0-9]+)*$"}
           }
         }
       }

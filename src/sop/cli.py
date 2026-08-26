@@ -1,77 +1,99 @@
-import argparse
-import sys
-import os
-import json
-from .scanner import RepositoryScanner
-from .engine import SOPDiffer, SOPPatcher
+"""Command-line interface for deterministic, local-only SOP synchronization."""
 
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+from .engine import SOPDiffer, SOPPatcher
+from .scanner import DEFAULT_MANAGED_PATHS, RepositoryScanner
 from .validator import SOPValidator
 
-def main():
-    parser = argparse.ArgumentParser(
-        prog="sop",
-        description="WellManifest SOP (Standard Operating Procedure) runtime and synchronizer"
+
+def _scanner(args: argparse.Namespace) -> RepositoryScanner:
+    managed = tuple(args.managed_path) if args.managed_path else DEFAULT_MANAGED_PATHS
+    return RepositoryScanner(args.root, args.standard, managed)
+
+
+def _dump(value: Any) -> None:
+    print(json.dumps(value, indent=2, ensure_ascii=False, sort_keys=True))
+
+
+def _add_sync_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--root", default=".", help="Repository or parent directory to scan")
+    parser.add_argument(
+        "--standard", help="Local standard/template repository; network URLs are rejected"
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument(
+        "--managed-path", action="append", help="Relative managed path (repeatable)"
+    )
 
-    # sop scan
-    scan_p = subparsers.add_parser("scan", help="Skanuj repozytoria pod kÄ…tem zgodnoĹ›ci z SOP i WellManifest")
-    scan_p.add_argument("--root", default=".", help="Katalog nadrzÄ™dny organizacji (domyĹ›lnie .)")
-    scan_p.add_argument("--json", action="store_true", help="Format wyjĹ›ciowy JSON")
 
-    # sop sync / apply
-    apply_p = subparsers.add_parser("apply", help="Aplikuj poprawki standardĂłw do repozytoriĂłw")
-    apply_p.add_argument("--root", default=".", help="Katalog nadrzÄ™dny")
-    apply_p.add_argument("--dry-run", action="store_true", help="Tylko podglÄ…d bez wprowadzania zmian")
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="sop", description="Local WellManifest SOP conformance runtime"
+    )
+    commands = parser.add_subparsers(dest="command", required=True)
+    for name, help_text in (
+        ("scan", "Inspect local repositories without modification"),
+        ("diff", "Render deterministic drift and patch operations"),
+        ("patch", "Preview a deterministic patch plan"),
+        ("sync", "Preview synchronization; --write explicitly enables changes"),
+        ("verify", "Verify local repositories against a local standard"),
+    ):
+        command = commands.add_parser(name, help=help_text)
+        _add_sync_arguments(command)
+        if name == "sync":
+            command.add_argument("--write", action="store_true", help="Apply planned local changes")
+    validate = commands.add_parser(
+        "validate-spec", help="Validate one canonical JSON-compatible YAML SOP"
+    )
+    validate.add_argument("file")
+    return parser
 
-    # sop validate-spec
-    val_p = subparsers.add_parser("validate-spec", help="Waliduj plik specyfikacji SOP")
-    val_p.add_argument("file", help="ĹšcieĹĽka do pliku specyfikacji (YAML/JSON)")
 
-    args = parser.parse_args()
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    if args.command == "validate-spec":
+        try:
+            data = SOPValidator.load(args.file)
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
+            print(f"Unable to read SOP: {exc}", file=sys.stderr)
+            return 2
+        valid, errors = SOPValidator.validate_dict(data)
+        _dump({"file": str(Path(args.file)), "valid": valid, "errors": errors})
+        return 0 if valid else 1
+
+    if args.standard and "://" in args.standard:
+        print("Network standards are forbidden; provide a local path", file=sys.stderr)
+        return 2
+    scanner = _scanner(args)
+    report = scanner.scan_all()
+    operations = SOPDiffer.build_patch(report.findings)
 
     if args.command == "scan":
-        scanner = RepositoryScanner(args.root)
-        report = scanner.scan_all()
-        summary = SOPDiffer.calculate_drift_summary(report.findings)
-        if args.json:
-            print(json.dumps({
-                "timestamp": report.timestamp,
-                "scanned_count": report.scanned_repos_count,
-                "clean_count": report.clean_repos_count,
-                "drifts_summary": summary,
-                "findings": [{"repo": f.repo_name, "rule": f.rule_id, "severity": f.severity, "msg": f.message} for f in report.findings]
-            }, indent=2, ensure_ascii=False))
-        else:
-            print(f"=== SOP Repository Scan Report ({report.timestamp}) ===")
-            print(f"Przeskanowano repozytoriĂłw: {report.scanned_repos_count} (Czyste: {report.clean_repos_count})")
-            print(f"Wykryto rozbieĹĽnoĹ›ci: {len(report.findings)}")
-            for f in report.findings:
-                print(f"  [{f.severity}] {f.repo_name}: {f.rule_id} - {f.message}")
+        _dump(report.to_dict())
+        return 0
+    if args.command in {"diff", "patch"}:
+        _dump(
+            {
+                "summary": SOPDiffer.calculate_drift_summary(report.findings),
+                "operations": [operation.to_dict() for operation in operations],
+            }
+        )
+        return 0
+    if args.command == "sync":
+        result = SOPPatcher.apply_all(operations, write=args.write)
+        _dump({"mode": "write" if args.write else "dry-run", **result})
+        return 0
 
-    elif args.command == "apply":
-        scanner = RepositoryScanner(args.root)
-        report = scanner.scan_all()
-        result = SOPPatcher.apply_all(report.findings, dry_run=args.dry_run)
-        print(f"=== SOP Auto-Patcher ===")
-        print(f"Zaaplikowano poprawek: {result['applied']}")
-        print(f"PominiÄ™to (wymaga manualnej interwencji): {result['skipped']}")
+    errors = [finding.message for finding in report.findings]
+    _dump({"valid": not errors, "errors": errors})
+    return 0 if not errors else 1
 
-    elif args.command == "validate-spec":
-        if not os.path.isfile(args.file):
-            print(f"BĹ‚Ä…d: Plik '{args.file}' nie istnieje.", file=sys.stderr)
-            sys.exit(1)
-        import yaml
-        with open(args.file, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-        is_valid, errors = SOPValidator.validate_dict(data)
-        if is_valid:
-            print(f"SUKCES: Specyfikacja '{args.file}' jest w 100% poprawna.")
-        else:
-            print(f"BĹÄ„D walidacji specyfikacji '{args.file}':", file=sys.stderr)
-            for err in errors:
-                print(f"  - {err}", file=sys.stderr)
-            sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

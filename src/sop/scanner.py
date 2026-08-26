@@ -1,110 +1,145 @@
-import os
-import re
-import json
-from typing import List, Dict, Any, Optional
+"""Deterministic, local-only repository conformance scanner."""
+
+from __future__ import annotations
+
+import hashlib
+from pathlib import Path, PurePosixPath
+
 from .models import DriftFinding, ScanReport
 
+DEFAULT_MANAGED_PATHS = (
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    ".githooks/pre-commit",
+    ".governance/manifest.json",
+)
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def is_repository(path: Path) -> bool:
+    """Accept regular clones and linked worktrees without invoking Git."""
+    marker = path / ".git"
+    return marker.is_dir() or marker.is_file()
+
+
+def has_symlink_component(path: Path) -> bool:
+    """Inspect an unresolved path and its existing parents without following links."""
+    absolute = path.absolute()
+    return any(candidate.is_symlink() for candidate in (absolute, *absolute.parents))
+
+
+def validate_managed_path(value: str) -> str:
+    """Return a canonical repository-relative POSIX path or reject it."""
+    if not isinstance(value, str) or not value or "\\" in value:
+        raise ValueError(f"Managed path must be canonical and relative: {value!r}")
+    path = PurePosixPath(value)
+    if (
+        path.is_absolute()
+        or path.as_posix() != value
+        or any(part in {"", ".", ".."} for part in path.parts)
+        or any(part.casefold() == ".git" for part in path.parts)
+        or (path.parts and path.parts[0].endswith(":"))
+    ):
+        raise ValueError(f"Unsafe managed path: {value}")
+    return value
+
+
+def safe_regular_file(root: Path, relative: str) -> Path | None:
+    """Return a contained regular file without traversing symlink components."""
+    candidate = root / validate_managed_path(relative)
+    if has_symlink_component(candidate):
+        return None
+    resolved_root = root.resolve()
+    resolved_candidate = candidate.resolve()
+    try:
+        resolved_candidate.relative_to(resolved_root)
+    except ValueError:
+        return None
+    return candidate if candidate.is_file() else None
+
+
 class RepositoryScanner:
-    def __init__(self, root_dir: str):
-        self.root_dir = os.path.abspath(root_dir)
+    def __init__(
+        self,
+        root_dir: str | Path,
+        standard_root: str | Path | None = None,
+        managed_paths: tuple[str, ...] = DEFAULT_MANAGED_PATHS,
+    ) -> None:
+        self.root_dir = Path(root_dir).resolve()
+        self.standard_root = Path(standard_root).absolute() if standard_root else None
+        self.managed_paths = tuple(sorted({validate_managed_path(item) for item in managed_paths}))
 
-    def scan_repository(self, repo_path: str) -> List[DriftFinding]:
-        findings = []
-        repo_name = os.path.basename(repo_path)
+    def repositories(self) -> list[Path]:
+        if is_repository(self.root_dir):
+            return [self.root_dir]
+        if not self.root_dir.is_dir():
+            return []
+        repositories = (
+            child.resolve()
+            for child in self.root_dir.iterdir()
+            if child.is_dir() and is_repository(child)
+        )
+        return sorted(repositories, key=lambda item: item.as_posix().casefold())
 
-        if not os.path.isdir(os.path.join(repo_path, ".git")):
-            return findings
+    def scan_repository(self, repo_path: str | Path) -> list[DriftFinding]:
+        repo = Path(repo_path).resolve()
+        if not is_repository(repo):
+            return []
 
-        # Rule 1: Sprawdzenie obecności governance baseline
-        gov_dir = os.path.join(repo_path, ".governance")
-        if not os.path.isdir(gov_dir):
-            findings.append(DriftFinding(
-                repo_name=repo_name,
-                rule_id="SOP-GOV-001",
-                severity="ERROR",
-                message=f"Brak katalogu .governance w repozytorium {repo_name}",
-                remediation_action="Zainstaluj baseline wellmanifest/new-project za pomoca create_adoption_lock",
-                target_path=gov_dir,
-                auto_fixable=True
-            ))
+        findings: list[DriftFinding] = []
+        for relative in self.managed_paths:
+            target = safe_regular_file(repo, relative)
+            source = (
+                safe_regular_file(self.standard_root, relative) if self.standard_root else None
+            )
+            expected = sha256_file(source) if source else None
+            actual = sha256_file(target) if target else None
 
-        # Rule 2: Sprawdzenie obecności .githooks/pre-commit
-        pre_commit_hook = os.path.join(repo_path, ".githooks", "pre-commit")
-        if not os.path.isfile(pre_commit_hook):
-            findings.append(DriftFinding(
-                repo_name=repo_name,
-                rule_id="SOP-HOOK-001",
-                severity="WARNING",
-                message=f"Brak aktywnego githooka pre-commit w {repo_name}",
-                remediation_action="Zainstaluj standardowy .githooks/pre-commit z wellmanifest/new-project",
-                target_path=pre_commit_hook,
-                auto_fixable=True
-            ))
-
-        # Rule 3: Sprawdzenie formatu ticketów pod kątem daty w nazwie lub nagłówku
-        project_dir = os.path.join(repo_path, "project")
-        if os.path.isdir(project_dir):
-            for item in os.listdir(project_dir):
-                ticket_path = os.path.join(project_dir, item)
-                if os.path.isdir(ticket_path) and re.match(r"^ticket-[0-9]{3}$", item):
-                    readme_file = os.path.join(ticket_path, "README.md")
-                    if os.path.isfile(readme_file):
-                        try:
-                            with open(readme_file, "r", encoding="utf-8", errors="ignore") as f:
-                                content = f.read()
-                            # Sprawdź czy ticket zawiera pole Created z datą YYYY-MM-DD
-                            if not re.search(r"\*\*Created\*\*:\s*[0-9]{4}-[0-9]{2}-[0-9]{2}", content):
-                                findings.append(DriftFinding(
-                                    repo_name=repo_name,
-                                    rule_id="SOP-TICKET-DATE-001",
-                                    severity="WARNING",
-                                    message=f"Ticket {item} w repozytorium {repo_name} nie zawiera wymaganej daty utworzenia (YYYY-MM-DD)",
-                                    remediation_action="Dodaj pole Created: YYYY-MM-DD do README ticketu oraz zaktualizuj wpis w TICKETS.md",
-                                    target_path=readme_file,
-                                    auto_fixable=True
-                                ))
-                        except Exception:
-                            pass
-
-        # Rule 4: Sprawdzenie obecności plików agent hosts (AGENTS.md, CLAUDE.md, GEMINI.md)
-        for host_file in ["AGENTS.md", "CLAUDE.md", "GEMINI.md"]:
-            host_path = os.path.join(repo_path, host_file)
-            if not os.path.isfile(host_path):
-                findings.append(DriftFinding(
-                    repo_name=repo_name,
-                    rule_id="SOP-AGENT-HOST-001",
-                    severity="WARNING",
-                    message=f"Brak pliku instrukcji agenta {host_file} w {repo_name}",
-                    remediation_action=f"Wygeneruj {host_file} z szablonu wellmanifest/new-project",
-                    target_path=host_path,
-                    auto_fixable=True
-                ))
-
+            if actual is None:
+                findings.append(
+                    DriftFinding(
+                        repo_name=repo.name,
+                        repo_path=str(repo),
+                        rule_id="SOP-FILE-MISSING",
+                        severity="ERROR",
+                        message=f"Missing managed file: {relative}",
+                        relative_path=relative,
+                        source_path=str(source) if source and source.is_file() else None,
+                        expected_sha256=expected,
+                        auto_fixable=expected is not None,
+                    )
+                )
+            elif expected is not None and actual != expected:
+                findings.append(
+                    DriftFinding(
+                        repo_name=repo.name,
+                        repo_path=str(repo),
+                        rule_id="SOP-FILE-DRIFT",
+                        severity="ERROR",
+                        message=f"Managed file differs from standard: {relative}",
+                        relative_path=relative,
+                        source_path=str(source),
+                        expected_sha256=expected,
+                        actual_sha256=actual,
+                        auto_fixable=True,
+                    )
+                )
         return findings
 
-    def scan_all(self, target_dirs: Optional[List[str]] = None) -> ScanReport:
-        from datetime import datetime
-        all_findings = []
-        scanned_count = 0
-        clean_count = 0
-
-        paths_to_scan = target_dirs if target_dirs else [self.root_dir]
-        for base in paths_to_scan:
-            if not os.path.exists(base):
-                continue
-            for item in os.listdir(base):
-                sub_path = os.path.join(base, item)
-                if os.path.isdir(sub_path):
-                    scanned_count += 1
-                    findings = self.scan_repository(sub_path)
-                    if findings:
-                        all_findings.extend(findings)
-                    else:
-                        clean_count += 1
-
+    def scan_all(self) -> ScanReport:
+        repositories = self.repositories()
+        findings = [finding for repo in repositories for finding in self.scan_repository(repo)]
+        dirty = {finding.repo_path for finding in findings}
         return ScanReport(
-            timestamp=datetime.now().isoformat(),
-            scanned_repos_count=scanned_count,
-            findings=all_findings,
-            clean_repos_count=clean_count
+            scanned_repos_count=len(repositories),
+            clean_repos_count=len(repositories) - len(dirty),
+            findings=findings,
         )
