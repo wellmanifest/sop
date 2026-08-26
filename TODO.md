@@ -26,9 +26,9 @@ Projekt definiuje `wellmanifest.sop/v1` i lokalny runtime conformance. Runtime n
 - [x] Zamknięty JSON Schema `schemas/sop.schema.json` dla `wellmanifest.sop/v1`.
 - [x] Format JSON-compatible YAML 1.2 i dependency-free validator w `src/sop/validator.py`.
 - [x] `spec/sop-new-ticket.yaml` — alokacja ticketu i bounded intent.
-- [ ] **PENDING dependent slice**: `spec/sop-subactor-repair.yaml` — po merge i closure ticket-001.
-- [ ] **PENDING dependent slice**: `spec/sop-validator-dispatch.yaml` — po merge i closure ticket-001.
-- [ ] **PENDING dependent slice**: `spec/sop-cross-sync.yaml` — po merge i closure ticket-001.
+- [ ] **PENDING dependent slice**: `spec/sop-subactor-repair.yaml` — ticket-001 closed, ready for dependent ticket.
+- [ ] **PENDING dependent slice**: `spec/sop-validator-dispatch.yaml` — ticket-001 closed, ready for dependent ticket.
+- [ ] **PENDING dependent slice**: `spec/sop-cross-sync.yaml` — ticket-001 closed, ready for dependent ticket.
 
 ### Faza 3: Lokalny silnik skanowania i synchronizacji
 
@@ -45,7 +45,7 @@ Projekt definiuje `wellmanifest.sop/v1` i lokalny runtime conformance. Runtime n
 - [ ] **PENDING dependent slice**: kanoniczna reguła stop-on-failure i bounded repair w `spec/sop-subactor-repair.yaml`.
 - [ ] **BLOCKED external**: uniwersalna instalacja hooków w organizacjach. Modyfikacje `.githooks/**` są poza allowedPaths, a wykonanie cross-repo wymaga autoryzacji właścicieli.
 - [ ] **BLOCKED external**: rzeczywisty dispatch `subactor/repair`; w tej sesji nie uruchamiano zewnętrznego runtime.
-- [ ] **BLOCKED external**: rzeczywista walidacja PR przez `subactor/validator-agent`; nie utworzono PR ani trusted approval receipt.
+- [x] Rzeczywista walidacja PR przez `subactor/validator-agent`: PR #1 (ticket-001) i PR #3 (ticket-003) scalone przez exact-head trusted approval.
 
 ### Faza 5: Dual-Model LLM Benchmarking (ChatGPT ↔ Gemini)
 

@@ -2,8 +2,8 @@
 
 - **ID**: ticket-001
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-24
 
 ## Goal and scope
@@ -32,4 +32,7 @@ Publish the bounded foundation slice: the `wellmanifest.sop/v1` schema and catal
 
 ## Current disposition
 
-Keep `IN_PROGRESS / PUBLICATION` through exact-head review and trusted merge. Do not create the dependent ticket while ticket-001 still reserves the integration workstream.
+Closed as `DONE / DONE` in governance-only transaction ticket-004 based on
+integrated main. PR #1 merged at 2026-08-26T09:58:00Z, merge commit
+`969d25e109e53ba1e1438008f2946e119404bd73`. Dependent integration tickets
+for repair, validator-dispatch, and cross-sync procedures may now be allocated.
