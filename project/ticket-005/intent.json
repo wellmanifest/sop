@@ -1,0 +1,58 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-005",
+  "summary": "Governance closure of ticket-004 after governance-only closure merge",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P3",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-005/**", "TODO.md", "project/TICKETS.md",
+    "project/ticket-004/**"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md", ".governance/**", "AGENTS.md",
+    "README.md", "VERSION", "CHANGELOG.md", ".github/**", "project.sh",
+    "project.bat", "project/governance-check.*", "project/new-ticket.sh",
+    "project/readme.sh", "scripts/runtime.sh"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-004"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "2d646420b28e11928e3c5b1da8349946e6f4c699",
+    "targetBranch": "main",
+    "outcome": "Governance-only closure: mark ticket-004 as DONE/DONE and ticket-005 as DONE/DONE based on integrated main.",
+    "nonGoals": [
+      "Modify source code, tests, specs, or governance configuration",
+      "Bump VERSION or update CHANGELOG"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 5,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Close ticket-004 as DONE/DONE in a governance-only transaction. ticket-005 closes itself in the same commit per the self-closing closure pattern.",
+      "components": [
+        {"name": "governance-closure", "paths": ["project/ticket-004/**"]}
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Discard unmerged ticket branch and revert to baseline."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {"criterion": "AC-01", "commands": ["project\\governance-check.bat"], "evidence": "project/ticket-005/ai-devin-logs.txt"}
+    ]
+  }
+}
