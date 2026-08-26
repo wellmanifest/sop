@@ -24,7 +24,7 @@
   "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
-    "acceptedBaseSha": "31f7fc9ec8cca80c0a867e50c75737d8a0a1ba06",
+    "acceptedBaseSha": "96480c65a3b45579652c3c4d42bf0fcdacdd212d",
     "targetBranch": "main",
     "outcome": "A publishable SOP v1 foundation slice: schema and catalog, canonical new-ticket procedure, safe local synchronization runtime, architecture, and Dual-LLM methodology.",
     "nonGoals": [
