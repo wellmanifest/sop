@@ -1,0 +1,18 @@
+2026-08-25 SESSION_EXECUTION_AUTHORIZATION recorded from the user's instruction to publish according to repository standard.
+
+PLAN
+- PR 1 exposed GOV-AGENT-HOST-005 because `.githooks/pre-commit` lacks executable Git mode in Linux CI.
+- Ticket-002 was not merged; its remote branch was explicitly discarded after GOV-INTENT-003 required intent to precede implementation.
+- Ticket-003 was allocated through project/new-ticket.sh in the governance workstream.
+- Plan-only commit 2082fc1 contains ticket/index evidence and no hook implementation change.
+
+IMPLEMENTATION
+- Restored index mode from 100644 to 100755 without changing file bytes.
+- Hook SHA-256 before and after: 73bad0ce8bb2617ba089e9558ccee1a8fdfee3ee580ccd1c13a6e4d3471e3307.
+- git ls-files --stage reports mode 100755.
+- git diff --cached --summary reports only mode change 100644 => 100755 for the hook.
+
+VALIDATION
+- project\\governance-check.bat: GOV-PASS, 0 errors, 0 warnings.
+- git diff --check and git diff --cached --check: PASS.
+- Implementation follows plan-only commit 2082fc1.
