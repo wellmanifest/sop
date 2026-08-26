@@ -1,0 +1,60 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-004",
+  "summary": "Governance closure of ticket-001 and ticket-003 after SOP foundation and hook fix merges",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P3",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-004/**", "TODO.md", "project/TICKETS.md",
+    "project/ticket-001/**", "project/ticket-003/**",
+    "CHANGELOG.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md", ".governance/**", "AGENTS.md",
+    "README.md", "VERSION", ".github/**", "project.sh",
+    "project.bat", "project/governance-check.*", "project/new-ticket.sh",
+    "project/readme.sh", "scripts/runtime.sh"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-001", "ticket-003"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "969d25e109e53ba1e1438008f2946e119404bd73",
+    "targetBranch": "main",
+    "outcome": "Governance-only closure: mark ticket-001 and ticket-003 as DONE/DONE based on integrated main, record publication evidence in CHANGELOG.md, and update TODO.md closure state.",
+    "nonGoals": [
+      "Bump VERSION (owned by integration workstream, deferred to separate ticket)",
+      "Modify source code, tests, specs, or governance configuration",
+      "Create any new external effect beyond the closure commit"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 10,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Close merged tickets as DONE/DONE in a governance-only transaction based on the integrated default branch, per rule 18.",
+      "components": [
+        {"name": "governance-closure", "paths": ["project/ticket-001/**", "project/ticket-003/**", "CHANGELOG.md", "TODO.md"]}
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Discard unmerged ticket branch and revert to baseline."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {"criterion": "AC-01", "commands": ["project\\governance-check.bat"], "evidence": "project/ticket-004/ai-devin-logs.txt"}
+    ]
+  }
+}
