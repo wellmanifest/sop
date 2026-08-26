@@ -2,8 +2,8 @@
 
 - **ID**: ticket-003
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -21,3 +21,9 @@ Restore only the executable Git mode on `.githooks/pre-commit`. Linux CI rejects
 
 - Human participant: unresolved; no `user-*` file was created or changed.
 - Agent participant: [ai-devin.md](ai-devin.md)
+
+## Current disposition
+
+Closed as `DONE / DONE` in governance-only transaction ticket-004 based on
+integrated main. PR #3 merged at 2026-08-26T09:36:09Z, merge commit
+`96480c65a3b45579652c3c4d42bf0fcdacdd212d`.
