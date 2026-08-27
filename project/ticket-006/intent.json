@@ -1,0 +1,90 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-006",
+  "summary": "SOP subactor-repair, validator-dispatch and cross-sync spec slices",
+  "workstream": "integration",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-006/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "spec/sop-subactor-repair.yaml",
+    "spec/sop-validator-dispatch.yaml",
+    "spec/sop-cross-sync.yaml",
+    "tests/test_sop_spec_slices.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".githooks/**",
+    ".governance/**",
+    ".github/**"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-001"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "c36c938dd50941e1de9e45c7724db5bf6a4ed221",
+    "targetBranch": "main",
+    "outcome": "Three new SOP spec YAML files defining subactor-repair, validator-dispatch and cross-sync procedures with positive and negative tests, completing the PENDING dependent slices from Faza 2.",
+    "nonGoals": [
+      "Implement real subactor/repair dispatch or external runtime execution",
+      "Implement universal hook installation across organisations",
+      "Execute Dual-LLM benchmarking rounds"
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 10,
+      "maxAffectedComponents": 3,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Publish three bounded SOP spec slices (subactor-repair, validator-dispatch, cross-sync) as schema-valid YAML procedures with tests, completing the Faza 2 dependent slice backlog.",
+      "components": [
+        {
+          "name": "sop-contracts",
+          "paths": ["spec/**"]
+        },
+        {
+          "name": "conformance-runtime",
+          "paths": ["tests/**"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "Introduce spec/sop-subactor-repair.yaml as the bounded repair procedure",
+        "Introduce spec/sop-validator-dispatch.yaml as the exact-head validator dispatch procedure",
+        "Introduce spec/sop-cross-sync.yaml as the dry-run default cross-repo sync procedure"
+      ],
+      "dataChanges": [
+        "Update spec/sop-procedures.yaml catalog to list all four procedures"
+      ],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Discard unmerged ticket branch and revert to baseline."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": ["python -m unittest tests.test_sop_spec_slices -v"],
+        "evidence": "tests/test_sop_spec_slices.py"
+      },
+      {
+        "criterion": "AC-06",
+        "commands": ["./project/governance-check.sh"],
+        "evidence": "project/ticket-006/ai-devin-logs.txt"
+      }
+    ]
+  }
+}

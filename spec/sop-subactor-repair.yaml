@@ -1,0 +1,71 @@
+{
+  "schema": "wellmanifest.sop/v1",
+  "id": "sop-subactor-repair",
+  "title": "Bounded repair of a confirmed subactor autonomy defect",
+  "version": "1.0.0",
+  "domain": "wellmanifest/governance",
+  "philosophy": "Autonomy modulates; automation generates. Repair is a last-resort exception, not a default execution path.",
+  "preconditions": [
+    "An observable defect of subactor autonomy has been documented with a reproducer, ticket, correlation ID, logs and receipts.",
+    "The violated contract and the owning component have been identified.",
+    "A bounded repair ticket has been created in the repository of the mechanism owner, separate from the original goal ticket.",
+    "The repair ticket is IN_PROGRESS and on a ticket-named branch."
+  ],
+  "roles": {
+    "executor": "coding-agent",
+    "auditor": "governance-gate"
+  },
+  "steps": [
+    {
+      "stepNumber": 1,
+      "name": "Preserve reproducer and evidence",
+      "instruction": "Record the minimal reproducer, the violated contract reference, the owning component, and the correlation ID linking the defect to the original goal ticket.",
+      "actionType": "deterministic_automation",
+      "requiredEvidence": ["project/ticket-{NNN}/README.md", "project/ticket-{NNN}/intent.json"],
+      "postconditions": ["The repair ticket references the reproducer and the violated contract."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 2,
+      "name": "Scope the repair to the owning component",
+      "instruction": "Edit only the code, test or policy of the owning component within the repair ticket allowedPaths. Do not touch paths outside the declared scope.",
+      "actionType": "deterministic_automation",
+      "requiredEvidence": ["git diff on the ticket branch"],
+      "postconditions": ["Every changed path is inside intent.json allowedPaths.", "No forbiddenPath was modified."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 3,
+      "name": "Run component tests and governance gate",
+      "instruction": "Execute the component test suite and the repository governance check. All must pass before proceeding.",
+      "actionType": "validation_check",
+      "command": "npm test && npm run check && npm run standards:check",
+      "requiredEvidence": ["test output", "governance-check output"],
+      "postconditions": ["All component tests pass.", "The governance gate reports zero errors."],
+      "onFailure": {"action": "retry"}
+    },
+    {
+      "stepNumber": 4,
+      "name": "Stop on failure — do not mask the defect",
+      "instruction": "If any test or gate fails, stop immediately. Do not work around the failure by skipping tests, loosening assertions or bypassing the gate. A masked defect is worse than a blocked repair.",
+      "actionType": "human_gate",
+      "requiredEvidence": ["failure output", "diagnosis of the failing assertion"],
+      "postconditions": ["Either all gates pass or the repair is stopped with a documented blocker."],
+      "onFailure": {"action": "escalate_to_human"}
+    },
+    {
+      "stepNumber": 5,
+      "name": "Re-delegate the original goal to subactor",
+      "instruction": "After the repair is merged, re-delegate the original goal to subactor through its official interface. The repair is considered effective only after a new end-to-end run produces a valid receipt and readback.",
+      "actionType": "subactor_repair",
+      "requiredEvidence": ["new delegation ticket or correlation ID", "receipt", "readback"],
+      "postconditions": ["The original goal completed with a valid receipt and independent readback.", "The repair ticket can be closed as DONE/DONE."],
+      "onFailure": {"action": "invoke_subactor", "fallbackProcedure": "sop-subactor-repair"}
+    }
+  ],
+  "postconditions": [
+    "The autonomy defect is fixed and verified by a new end-to-end run, not by a unit test alone.",
+    "The repair ticket is DONE/DONE after the original goal succeeds.",
+    "No scope was expanded beyond the declared allowedPaths."
+  ]
+}

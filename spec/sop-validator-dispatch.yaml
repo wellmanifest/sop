@@ -1,0 +1,76 @@
+{
+  "schema": "wellmanifest.sop/v1",
+  "id": "sop-validator-dispatch",
+  "title": "Dispatch validator-agent for exact-head trusted merge approval",
+  "version": "1.0.0",
+  "domain": "wellmanifest/governance",
+  "philosophy": "Autonomy modulates; automation generates. Merge approval comes from a protected boundary, not from chat, markdown or self-approval.",
+  "preconditions": [
+    "A pull request targets the protected default branch of a repository in the validator-agent registry.",
+    "All required CI checks are passing on the current PR head.",
+    "The active implementation ticket is IN_PROGRESS/PUBLICATION.",
+    "No push has occurred since the last CI run on the target head."
+  ],
+  "roles": {
+    "executor": "coding-agent",
+    "auditor": "validator-agent"
+  },
+  "steps": [
+    {
+      "stepNumber": 1,
+      "name": "Freeze the exact head SHA",
+      "instruction": "Re-read the PR head SHA from the GitHub API immediately before dispatch. Record it as the frozen head. Do not push after freeze until the validator approves or fails.",
+      "actionType": "deterministic_automation",
+      "command": "gh pr view {N} --json headRefOid",
+      "requiredEvidence": ["frozen head SHA", "timestamp of freeze"],
+      "postconditions": ["The frozen head SHA matches the current PR head.", "No push occurs after freeze until approve or fail."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 2,
+      "name": "Verify all required checks pass on the frozen head",
+      "instruction": "Confirm that every required CI check is in SUCCESS state on the exact frozen head SHA. If any check is pending, failed or missing, do not dispatch.",
+      "actionType": "validation_check",
+      "command": "gh pr checks {N} --json name,state",
+      "requiredEvidence": ["check states for the frozen head"],
+      "postconditions": ["Every required check is SUCCESS on the frozen head."],
+      "onFailure": {"action": "retry"}
+    },
+    {
+      "stepNumber": 3,
+      "name": "Dispatch validator-agent with exact-head binding",
+      "instruction": "Invoke the validator-agent workflow with strategy=direct-pr, the frozen head SHA, the ticket ID and explicit_merge=true. The validator must validate the exact frozen head, not a newer one.",
+      "actionType": "deterministic_automation",
+      "command": "gh workflow run validator.yml --repo subactor/validator-agent --ref main -f strategy=direct-pr -f repository_owner={OWNER} -f repository_name={REPO} -f pull_request={N} -f expected_head_sha={FROZEN_SHA} -f ticket={TICKET} -f explicit_merge=true -f force=true",
+      "requiredEvidence": ["workflow run URL", "dispatch timestamp"],
+      "postconditions": ["The validator-agent workflow was dispatched with the exact frozen head SHA."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 4,
+      "name": "Watch the validator run to completion",
+      "instruction": "Poll the validator-agent workflow run until it reaches a terminal state (success or failure). Do not approve or merge manually while the validator is running.",
+      "actionType": "validation_check",
+      "command": "gh run view {RUN_ID} --repo subactor/validator-agent --json status,conclusion",
+      "requiredEvidence": ["validator run conclusion"],
+      "postconditions": ["The validator run reached a terminal state."],
+      "onFailure": {"action": "escalate_to_human"}
+    },
+    {
+      "stepNumber": 5,
+      "name": "Confirm merge and close the ticket",
+      "instruction": "After validator success with explicit_merge, confirm the PR is MERGED. Set the implementation ticket to DONE/DONE only in a governance-only closure based on the integrated default branch.",
+      "actionType": "deterministic_automation",
+      "command": "gh pr view {N} --json state,mergedAt,mergeCommit",
+      "requiredEvidence": ["merge commit OID", "merge timestamp"],
+      "postconditions": ["The PR is MERGED.", "The ticket branch is deleted on merge.", "The ticket status is updated to DONE/DONE in a governance closure."],
+      "onFailure": {"action": "escalate_to_human"}
+    }
+  ],
+  "postconditions": [
+    "The PR was merged only after exact-head trusted validator approval.",
+    "No self-approval, chat approval or markdown approval was used.",
+    "The frozen head SHA matches the merged commit.",
+    "The ticket branch was deleted on merge."
+  ]
+}

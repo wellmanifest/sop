@@ -1,0 +1,76 @@
+{
+  "schema": "wellmanifest.sop/v1",
+  "id": "sop-cross-sync",
+  "title": "Cross-repo synchronisation of managed paths with dry-run default",
+  "version": "1.0.0",
+  "domain": "wellmanifest/governance",
+  "philosophy": "Autonomy modulates; automation generates. Synchronisation is a read-only audit by default; writes require explicit authorisation and per-file verification.",
+  "preconditions": [
+    "A source standard repository and a target clone are both available on the local filesystem.",
+    "The managed paths list is defined in the source standard manifest or lock file.",
+    "The target clone is a regular clone or worktree, not a bare repository.",
+    "The operator has read access to the source and write access to the target."
+  ],
+  "roles": {
+    "executor": "coding-agent",
+    "auditor": "governance-gate"
+  },
+  "steps": [
+    {
+      "stepNumber": 1,
+      "name": "Scan the target clone for drift",
+      "instruction": "Run the local SOP scanner against the target clone using the source standard. The scanner compares managed paths by SHA-256 digest and reports drift without modifying anything.",
+      "actionType": "deterministic_automation",
+      "command": "python -m sop scan --standard {STANDARD_PATH} --target {TARGET_PATH} --json",
+      "requiredEvidence": ["scan output JSON", "drift summary"],
+      "postconditions": ["A drift report is produced listing every managed path that differs from the standard."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 2,
+      "name": "Generate a plan patch in dry-run",
+      "instruction": "Generate a patch plan from the drift report. The plan is bound to the exact scan SHA-256 and lists per-file operations. Dry-run is the default; no files are written.",
+      "actionType": "deterministic_automation",
+      "command": "python -m sop diff --standard {STANDARD_PATH} --target {TARGET_PATH} --json",
+      "requiredEvidence": ["plan JSON with per-file SHA-256"],
+      "postconditions": ["The plan is produced without writing any file.", "Each planned operation is bound to a source SHA-256."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 3,
+      "name": "Validate managed paths and safety constraints",
+      "instruction": "Validate the plan against managed-path rules: reject traversal, .git, symlinks and paths outside the managed set. Reject any operation that would modify a forbidden path.",
+      "actionType": "validation_check",
+      "command": "python -m sop patch --standard {STANDARD_PATH} --target {TARGET_PATH} --dry-run --json",
+      "requiredEvidence": ["preflight validation output"],
+      "postconditions": ["No planned operation targets a forbidden path.", "No traversal or symlink is present.", "All planned paths are in the managed set."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 4,
+      "name": "Apply the patch with explicit write authorisation",
+      "instruction": "Only after dry-run validation passes, apply the patch with --write. Each file is written atomically and verified by re-reading and comparing SHA-256. The batch is not a multi-file transaction; a failure on one file does not roll back others.",
+      "actionType": "deterministic_automation",
+      "command": "python -m sop patch --standard {STANDARD_PATH} --target {TARGET_PATH} --write --json",
+      "requiredEvidence": ["per-file write result", "per-file verify SHA-256"],
+      "postconditions": ["Every written file matches the source SHA-256 on re-read.", "No file outside the plan was modified."],
+      "onFailure": {"action": "abort"}
+    },
+    {
+      "stepNumber": 5,
+      "name": "Verify the target after sync",
+      "instruction": "Run the scanner again to confirm zero drift on all managed paths. Any remaining drift indicates a partial failure that must be documented.",
+      "actionType": "validation_check",
+      "command": "python -m sop verify --standard {STANDARD_PATH} --target {TARGET_PATH} --json",
+      "requiredEvidence": ["verify output with zero drift"],
+      "postconditions": ["The scanner reports zero drift on all managed paths.", "Any partial failure is documented with the affected file list."],
+      "onFailure": {"action": "escalate_to_human"}
+    }
+  ],
+  "postconditions": [
+    "All managed paths in the target match the source standard by SHA-256.",
+    "No path outside the managed set was modified.",
+    "The sync was performed with dry-run default and explicit write authorisation.",
+    "Each file was verified atomically after write."
+  ]
+}

@@ -26,9 +26,9 @@ Projekt definiuje `wellmanifest.sop/v1` i lokalny runtime conformance. Runtime n
 - [x] Zamknięty JSON Schema `schemas/sop.schema.json` dla `wellmanifest.sop/v1`.
 - [x] Format JSON-compatible YAML 1.2 i dependency-free validator w `src/sop/validator.py`.
 - [x] `spec/sop-new-ticket.yaml` — alokacja ticketu i bounded intent.
-- [ ] **PENDING dependent slice**: `spec/sop-subactor-repair.yaml` — ticket-001 closed, ready for dependent ticket.
-- [ ] **PENDING dependent slice**: `spec/sop-validator-dispatch.yaml` — ticket-001 closed, ready for dependent ticket.
-- [ ] **PENDING dependent slice**: `spec/sop-cross-sync.yaml` — ticket-001 closed, ready for dependent ticket.
+- [x] `spec/sop-subactor-repair.yaml` — bounded repair procedure with stop-on-failure (ticket-006).
+- [x] `spec/sop-validator-dispatch.yaml` — exact-head validator dispatch with freeze (ticket-006).
+- [x] `spec/sop-cross-sync.yaml` — dry-run default cross-repo sync with atomic write (ticket-006).
 
 ### Faza 3: Lokalny silnik skanowania i synchronizacji
 
@@ -42,7 +42,7 @@ Projekt definiuje `wellmanifest.sop/v1` i lokalny runtime conformance. Runtime n
 ### Faza 4: Commit triggery, subactor i validator
 
 - [x] Local-only command contracts w `src/sop/engine.py`; samo renderowanie nie wykonuje procesów ani efektów sieciowych.
-- [ ] **PENDING dependent slice**: kanoniczna reguła stop-on-failure i bounded repair w `spec/sop-subactor-repair.yaml`.
+- [x] Kanoniczna reguła stop-on-failure i bounded repair w `spec/sop-subactor-repair.yaml` (ticket-006).
 - [ ] **BLOCKED external**: uniwersalna instalacja hooków w organizacjach. Modyfikacje `.githooks/**` są poza allowedPaths, a wykonanie cross-repo wymaga autoryzacji właścicieli.
 - [ ] **BLOCKED external**: rzeczywisty dispatch `subactor/repair`; w tej sesji nie uruchamiano zewnętrznego runtime.
 - [x] Rzeczywista walidacja PR przez `subactor/validator-agent`: PR #1 (ticket-001) i PR #3 (ticket-003) scalone przez exact-head trusted approval.
