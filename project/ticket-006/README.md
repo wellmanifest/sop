@@ -2,8 +2,8 @@
 
 - **ID**: ticket-006
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-27
 
 ## Goal and scope
@@ -22,12 +22,12 @@ Każdy spec jest zgodny z `wellmanifest.sop/v1` JSON Schema i jest walidowany pr
 
 ## Acceptance criteria
 
-- [ ] AC-01: `spec/sop-subactor-repair.yaml` jest schema-valid i definiuje stop-on-failure + bounded repair
-- [ ] AC-02: `spec/sop-validator-dispatch.yaml` jest schema-valid i definiuje freeze + exact-head dispatch
-- [ ] AC-03: `spec/sop-cross-sync.yaml` jest schema-valid i definiuje dry-run default + atomowy zapis
-- [ ] AC-04: Pozytywne i negatywne testy dla każdego spec w `tests/test_sop_*_spec.py`
-- [ ] AC-05: `python -m pytest tests/ -x` przechodzi
-- [ ] AC-06: `./project/governance-check.sh` przechodzi
+- [x] AC-01: `spec/sop-subactor-repair.yaml` jest schema-valid i definiuje stop-on-failure + bounded repair
+- [x] AC-02: `spec/sop-validator-dispatch.yaml` jest schema-valid i definiuje freeze + exact-head dispatch
+- [x] AC-03: `spec/sop-cross-sync.yaml` jest schema-valid i definiuje dry-run default + atomowy zapis
+- [x] AC-04: Pozytywne i negatywne testy dla każdego spec w `tests/test_sop_spec_slices.py`
+- [x] AC-05: `python -m pytest tests/ -x` przechodzi
+- [x] AC-06: `./project/governance-check.sh` przechodzi
 
 ## Participants
 

@@ -1,0 +1,76 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-007",
+  "summary": "Governance closure of ticket-006, CHANGELOG update and stale branch cleanup",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-007/**",
+    "project/ticket-006/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "CHANGELOG.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".githooks/**",
+    ".governance/**",
+    ".github/**",
+    "src/**",
+    "tests/**",
+    "schemas/**"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-006"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "093a76cedc2b789ce5cfcb919be03dde1140c728",
+    "targetBranch": "main",
+    "outcome": "Close ticket-006 as DONE/DONE, update CHANGELOG.md with ticket-006 spec slices entry, update TODO.md, and clean up stale local branches. The sop-procedures.yaml catalog fix is deferred to a separate integration-workstream ticket.",
+    "nonGoals": [
+      "Implement new SOP spec slices or runtime code",
+      "Modify schemas, src, tests, or governance configuration",
+      "Execute external subactor runtime or Dual-LLM benchmarking"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 15,
+    "budgets": {
+      "maxImplementationFiles": 9,
+      "maxAffectedComponents": 3,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Governance-only closure ticket: update ticket-006 status to DONE/DONE and record the spec slices entry in CHANGELOG.md. The sop-procedures.yaml catalog fix is deferred to a separate integration-workstream ticket.",
+      "components": [
+        {
+          "name": "governance-closure",
+          "paths": ["project/ticket-006/**", "project/ticket-007/**", "CHANGELOG.md", "TODO.md", "project/TICKETS.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Discard unmerged ticket branch and revert to baseline."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-04",
+        "commands": ["./project/governance-check.sh"],
+        "evidence": "project/ticket-007/ai-devin-logs.txt"
+      }
+    ]
+  }
+}
