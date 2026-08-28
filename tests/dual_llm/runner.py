@@ -92,7 +92,7 @@ def build_executor_prompt(
 def call_openrouter(
     model: str,
     prompt: str,
-    api_key: str | None = None,
+    auth_token: str | None = None,
     timeout: int = DEFAULT_TIMEOUT,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     temperature: float = DEFAULT_TEMPERATURE,
@@ -101,7 +101,7 @@ def call_openrouter(
 
     Returns the raw JSON response. Raises on HTTP errors.
     """
-    key = api_key or os.environ.get("OPENROUTER_API_KEY", "")
+    key = auth_token or os.environ.get("OPENROUTER_API_KEY", "")
     if not key:
         raise ValueError("OPENROUTER_API_KEY is required")
 
@@ -134,7 +134,7 @@ def run_scenario(
     sop_path: str,
     sop_sha256: str,
     task: str,
-    api_key: str | None = None,
+    auth_token: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Execute a single benchmark run.
@@ -160,7 +160,7 @@ def run_scenario(
             "receipt_template": EXECUTOR_RECEIPT_TEMPLATE,
         }
 
-    response = call_openrouter(model_wire, prompt, api_key=api_key)
+    response = call_openrouter(model_wire, prompt, auth_token=auth_token)
     content = response.get("choices", [{}])[0].get("message", {}).get("content", "")
 
     return {
