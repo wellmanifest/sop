@@ -29,6 +29,7 @@ Projekt definiuje `wellmanifest.sop/v1` i lokalny runtime conformance. Runtime n
 - [x] `spec/sop-subactor-repair.yaml` — bounded repair procedure with stop-on-failure (ticket-006).
 - [x] `spec/sop-validator-dispatch.yaml` — exact-head validator dispatch with freeze (ticket-006).
 - [x] `spec/sop-cross-sync.yaml` — dry-run default cross-repo sync with atomic write (ticket-006).
+- [x] Katalog `spec/sop-procedures.yaml` zaktualizowany: wszystkie cztery procedury w `procedures`, puste `pendingDependentSlice` (ticket-007).
 
 ### Faza 3: Lokalny silnik skanowania i synchronizacji
 
