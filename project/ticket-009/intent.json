@@ -13,7 +13,8 @@
     "TODO.md",
     "project/TICKETS.md",
     "tests/dual_llm/**",
-    "docs/DUAL_LLM_BENCHMARKING.md"
+    "docs/DUAL_LLM_BENCHMARKING.md",
+    "docs/SESSION_STATUS_2026-08-28.md"
   ],
   "forbiddenPaths": [
     "project/ticket-*/user-*.md",

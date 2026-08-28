@@ -2,8 +2,8 @@
 
 - **ID**: ticket-007
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-28
 
 ## Goal and scope
@@ -21,7 +21,7 @@ workstream.
 
 ## Acceptance criteria
 
-- [ ] AC-01: `project/ticket-006/README.md` status is `DONE` and workflow state is `DONE`
+- [x] AC-01: `project/ticket-006/README.md` status is `DONE` and workflow state is `DONE`
 - [ ] AC-02: `./project/governance-check.sh` passes
 - [ ] AC-03: `CHANGELOG.md` has an entry for ticket-006 spec slices
 - [ ] AC-04: Stale local branches from merged tickets are cleaned up
