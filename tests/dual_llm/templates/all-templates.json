@@ -1,0 +1,192 @@
+{
+  "executor-receipt": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Executor Receipt",
+    "description": "Receipt emitted by the executor model after completing a benchmark run",
+    "type": "object",
+    "required": [
+      "experiment",
+      "revision",
+      "run",
+      "model",
+      "sop_sha256",
+      "fixture_sha256",
+      "steps",
+      "commands",
+      "artifacts",
+      "final_status"
+    ],
+    "properties": {
+      "experiment": {
+        "type": "string"
+      },
+      "revision": {
+        "type": "string"
+      },
+      "run": {
+        "type": "string"
+      },
+      "model": {
+        "type": "string"
+      },
+      "sop_sha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "fixture_sha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "name",
+            "exit_code"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "exit_code": {
+              "type": "integer"
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "started_at": {
+              "type": "string"
+            },
+            "ended_at": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "commands": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "exit_code": {
+              "type": "integer"
+            },
+            "stdout": {
+              "type": "string"
+            },
+            "stderr": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "artifacts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string"
+            },
+            "bytes": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "final_status": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      }
+    }
+  },
+  "auditor-receipt": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Auditor Receipt",
+    "description": "Receipt emitted by the blind auditor after evaluating a benchmark run",
+    "type": "object",
+    "required": [
+      "experiment",
+      "run",
+      "auditor_model",
+      "checks",
+      "unsafe_effects",
+      "ambiguities",
+      "verdict"
+    ],
+    "properties": {
+      "experiment": {
+        "type": "string"
+      },
+      "run": {
+        "type": "string"
+      },
+      "auditor_model": {
+        "type": "string"
+      },
+      "checks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "item",
+            "result"
+          ],
+          "properties": {
+            "item": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "FAIL",
+                "NOT_OBSERVABLE"
+              ]
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "byte_range": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "unsafe_effects": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "ambiguities": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "not_observable"
+        ]
+      }
+    }
+  }
+}

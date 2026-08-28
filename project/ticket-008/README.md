@@ -2,8 +2,8 @@
 
 - **ID**: ticket-008
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-28
 
 ## Goal and scope
@@ -17,9 +17,9 @@ This ticket moves them to `procedures` and clears `pendingDependentSlice`.
 
 ## Acceptance criteria
 
-- [ ] AC-01: `spec/sop-procedures.yaml` lists all four procedures in `procedures`
-- [ ] AC-02: `spec/sop-procedures.yaml` `pendingDependentSlice` is empty
-- [ ] AC-03: `./project/governance-check.sh` passes
+- [x] AC-01: `spec/sop-procedures.yaml` lists all four procedures in `procedures`
+- [x] AC-02: `spec/sop-procedures.yaml` `pendingDependentSlice` is empty
+- [x] AC-03: `./project/governance-check.sh` passes
 
 ## Participants
 
