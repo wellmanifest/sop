@@ -11,4 +11,5 @@ project/README.md, which may belong to an analysis generator.
 | **ticket-004** | [`README.md`](./ticket-004/README.md) | [`preprompt.md`](./ticket-004/preprompt.md) | - |  [`ai-devin.md`](./ticket-004/ai-devin.md) |  [`ai-devin-logs.txt`](./ticket-004/ai-devin-logs.txt) | [`changelog.md`](./ticket-004/changelog.md) |
 | **ticket-005** | [`README.md`](./ticket-005/README.md) | [`preprompt.md`](./ticket-005/preprompt.md) | - |  [`ai-devin.md`](./ticket-005/ai-devin.md) |  [`ai-devin-logs.txt`](./ticket-005/ai-devin-logs.txt) | [`changelog.md`](./ticket-005/changelog.md) |
 | **ticket-006** | [`README.md`](./ticket-006/README.md) | [`preprompt.md`](./ticket-006/preprompt.md) | - |  [`ai-devin.md`](./ticket-006/ai-devin.md) |  [`ai-devin-logs.txt`](./ticket-006/ai-devin-logs.txt) | [`changelog.md`](./ticket-006/changelog.md) |
+| **ticket-007** | [`README.md`](./ticket-007/README.md) | [`preprompt.md`](./ticket-007/preprompt.md) | - |  [`ai-devin.md`](./ticket-007/ai-devin.md) |  [`ai-devin-logs.txt`](./ticket-007/ai-devin-logs.txt) | [`changelog.md`](./ticket-007/changelog.md) |
 <!-- AUTO:TICKET_INDEX:END -->

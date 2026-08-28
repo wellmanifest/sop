@@ -1,12 +1,11 @@
 {
   "schema": "wellmanifest.sop/catalog-v1",
-  "description": "Foundation-slice catalog. Each referenced file is independently valid against schemas/sop.schema.json.",
+  "description": "SOP procedure catalog. Each referenced file is independently valid against schemas/sop.schema.json.",
   "procedures": [
-    "sop-new-ticket.yaml"
-  ],
-  "pendingDependentSlice": [
+    "sop-new-ticket.yaml",
     "sop-subactor-repair.yaml",
     "sop-validator-dispatch.yaml",
     "sop-cross-sync.yaml"
-  ]
+  ],
+  "pendingDependentSlice": []
 }

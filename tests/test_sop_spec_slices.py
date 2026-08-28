@@ -52,8 +52,10 @@ class TestNewSpecSlices(unittest.TestCase):
         catalog = json.loads((ROOT / "spec" / "sop-procedures.yaml").read_text(encoding="utf-8"))
         self.assertEqual(catalog["schema"], "wellmanifest.sop/catalog-v1")
         self.assertIn("sop-new-ticket.yaml", catalog["procedures"])
-        # New procedures are pending dependent slice until catalog update ticket
-        self.assertIn("sop-subactor-repair.yaml", catalog["pendingDependentSlice"])
+        self.assertIn("sop-subactor-repair.yaml", catalog["procedures"])
+        self.assertIn("sop-validator-dispatch.yaml", catalog["procedures"])
+        self.assertIn("sop-cross-sync.yaml", catalog["procedures"])
+        self.assertEqual(catalog["pendingDependentSlice"], [])
 
     def test_rejects_missing_required_field(self):
         data = SOPValidator.load(ROOT / "spec" / "sop-subactor-repair.yaml")

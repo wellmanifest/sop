@@ -12,7 +12,8 @@
     "project/ticket-008/**",
     "TODO.md",
     "project/TICKETS.md",
-    "spec/sop-procedures.yaml"
+    "spec/sop-procedures.yaml",
+    "tests/test_sop_spec_slices.py"
   ],
   "forbiddenPaths": [
     "project/ticket-*/user-*.md",
@@ -20,7 +21,6 @@
     ".governance/**",
     ".github/**",
     "src/**",
-    "tests/**",
     "schemas/**"
   ],
   "stacks": [],
@@ -51,6 +51,10 @@
         {
           "name": "sop-contracts",
           "paths": ["spec/**"]
+        },
+        {
+          "name": "conformance-runtime",
+          "paths": ["tests/**"]
         }
       ],
       "responsibilityChanges": false,
