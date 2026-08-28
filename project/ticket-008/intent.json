@@ -1,0 +1,77 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-008",
+  "summary": "Fix sop-procedures.yaml catalog: move 3 specs from pendingDependentSlice to procedures",
+  "workstream": "integration",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-008/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "spec/sop-procedures.yaml"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".githooks/**",
+    ".governance/**",
+    ".github/**",
+    "src/**",
+    "tests/**",
+    "schemas/**"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-006"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "c659be928195781dc1f49acf16ac4acbe933fe53",
+    "targetBranch": "main",
+    "outcome": "Fix the sop-procedures.yaml catalog that ticket-006 declared but could not write: move sop-subactor-repair.yaml, sop-validator-dispatch.yaml and sop-cross-sync.yaml from pendingDependentSlice to procedures, and clear pendingDependentSlice.",
+    "nonGoals": [
+      "Implement new SOP spec slices or runtime code",
+      "Modify schemas, src, tests, or governance configuration",
+      "Close ticket-007 (governance workstream, separate ticket)"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 5,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 1,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Integration-workstream ticket to fix the catalog gap left by ticket-006. spec/sop-procedures.yaml is owned by the integration workstream and was not in ticket-006's allowedPaths.",
+      "components": [
+        {
+          "name": "sop-contracts",
+          "paths": ["spec/**"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "Update spec/sop-procedures.yaml catalog: 3 specs move from pendingDependentSlice to procedures"
+      ],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Discard unmerged ticket branch and revert to baseline."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": ["./project/governance-check.sh"],
+        "evidence": "project/ticket-008/ai-devin-logs.txt"
+      }
+    ]
+  }
+}
