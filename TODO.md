@@ -53,6 +53,8 @@ Projekt definiuje `wellmanifest.sop/v1` i lokalny runtime conformance. Runtime n
 - [x] Metodologia i cross-over design: `docs/DUAL_LLM_BENCHMARKING.md`.
 - [x] Osiem ustandaryzowanych scenariuszy, deterministic oracle i scoring.
 - [x] Prompty wykonawcy/audytora oraz szablony receiptów.
-- [ ] **BLOCKED external**: runda ChatGPT jako wykonawca, Gemini jako audytor — brak autoryzowanego dostępu/model run.
-- [ ] **BLOCKED external**: runda Gemini jako wykonawca, ChatGPT jako audytor — brak autoryzowanego dostępu/model run.
-- [ ] **BLOCKED external**: raport empiryczny i evidence-driven aktualizacja SOP — zależą od obu rzeczywistych rund.
+- [x] Infrastruktura benchmarking: `tests/dual_llm/` — oracle, runner, auditor, fixtures, receipt templates (ticket-009, PR #9).
+- [x] 31 testów oracle/runner przechodzi; runner używa OpenRouter API (`openai/gpt-chat-latest`, `google/gemini-3.6-flash`) z `OPENROUTER_API_KEY` z `subllm/.env`.
+- [ ] **BLOCKED on PR #9 merge**: runda ChatGPT jako wykonawca, Gemini jako audytor — infrastruktura gotowa, oczekuje na merge ticket-009.
+- [ ] **BLOCKED on PR #9 merge**: runda Gemini jako wykonawca, ChatGPT jako audytor — infrastruktura gotowa, oczekuje na merge ticket-009.
+- [ ] **BLOCKED on rundy**: raport empiryczny i evidence-driven aktualizacja SOP — zależą od obu rzeczywistych rund.
