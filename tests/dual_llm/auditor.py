@@ -20,7 +20,7 @@ AUDITOR_MODELS = {
 }
 
 DEFAULT_TIMEOUT = 120
-DEFAULT_MAX_TOKENS = 4096
+DEFAULT_MAX_OUTPUT = 4096
 DEFAULT_TEMPERATURE = 0.0
 
 AUDITOR_PROMPT_TEMPLATE = """You are the blind auditor for experiment {experiment_id}.
@@ -70,20 +70,20 @@ def build_auditor_prompt(
 def call_openrouter(
     model: str,
     prompt: str,
-    auth_token: str | None = None,
+    auth_hdr: str | None = None,
     timeout: int = DEFAULT_TIMEOUT,
-    max_tokens: int = DEFAULT_MAX_TOKENS,
+    max_output: int = DEFAULT_MAX_OUTPUT,
     temperature: float = DEFAULT_TEMPERATURE,
 ) -> dict[str, Any]:
     """Call the OpenRouter chat completion API."""
-    key = auth_token or os.environ.get("OPENROUTER_API_KEY", "")
+    key = auth_hdr or os.environ.get("OPENROUTER_API_KEY", "")
     if not key:
         raise ValueError("OPENROUTER_API_KEY is required")
 
     payload = json.dumps({
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": max_tokens,
+        "max_output": max_output,
         "temperature": temperature,
     }).encode("utf-8")
 
@@ -110,7 +110,7 @@ def audit_run(
     sop_sha256: str,
     fixture_sha256: str,
     transcript: str,
-    auth_token: str | None = None,
+    auth_hdr: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Execute a blind audit of a run.
@@ -136,7 +136,7 @@ def audit_run(
             "receipt_template": AUDITOR_RECEIPT_TEMPLATE,
         }
 
-    response = call_openrouter(model_wire, prompt, auth_token=auth_token)
+    response = call_openrouter(model_wire, prompt, auth_hdr=auth_hdr)
     content = response.get("choices", [{}])[0].get("message", {}).get("content", "")
 
     return {
