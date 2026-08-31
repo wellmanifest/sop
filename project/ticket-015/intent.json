@@ -1,0 +1,72 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-015",
+  "summary": "Session status report 2026-08-31",
+  "workstream": "integration",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": ["project/ticket-015/**", "TODO.md", "project/TICKETS.md", "docs/SESSION_STATUS_2026-08-31.md", "project/ticket-012/README.md"],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "180677bc09001ca69b347038a0ebbc4c5c4f838c",
+    "targetBranch": "main",
+    "outcome": "Add docs/SESSION_STATUS_2026-08-31.md post-v0.1.0 session status report and close ticket-012 as DONE/DONE.",
+    "nonGoals": [
+      "Modify SOP spec files, schemas, or source code",
+      "Change governance managed files or lock",
+      "Create external network effects"
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 10,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Documentation-only change; no architecture impact. Adds a static markdown report and closes a merged governance ticket.",
+      "components": [
+        {
+          "name": "docs",
+          "paths": ["docs/SESSION_STATUS_2026-08-31.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Delete docs/SESSION_STATUS_2026-08-31.md and revert ticket-012 README status to IN_PROGRESS."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": ["test -f docs/SESSION_STATUS_2026-08-31.md"],
+        "evidence": "File exists in the merged tree."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": ["project\\governance-check.bat --base 180677bc09001ca69b347038a0ebbc4c5c4f838c --head HEAD"],
+        "evidence": "GOV-PASS with 0 errors, 0 warnings."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": ["gh pr view 15 --json state"],
+        "evidence": "PR merged via validator-agent exact-head approval."
+      }
+    ]
+  }
+}
