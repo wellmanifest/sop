@@ -3,6 +3,12 @@
 Portable Standard Operating Procedure contracts and a deterministic local
 conformance runtime for the WellManifest ecosystem.
 
+## Release status
+
+The installable package is version 0.1.0. This repository does not claim a PyPI
+publication; installation currently uses a verified checkout or locally built
+wheel.
+
 ## Scope
 
 The repository owns:
