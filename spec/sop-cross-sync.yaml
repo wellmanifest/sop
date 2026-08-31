@@ -21,7 +21,7 @@
       "name": "Scan the target clone for drift",
       "instruction": "Run the local SOP scanner against the target clone using the source standard. The scanner compares managed paths by SHA-256 digest and reports drift without modifying anything.",
       "actionType": "deterministic_automation",
-      "command": "python -m sop scan --standard {STANDARD_PATH} --target {TARGET_PATH} --json",
+      "command": "python -m sop scan --standard {STANDARD_PATH} --root {TARGET_PATH}",
       "requiredEvidence": ["scan output JSON", "drift summary"],
       "postconditions": ["A drift report is produced listing every managed path that differs from the standard."],
       "onFailure": {"action": "abort"}
@@ -31,7 +31,7 @@
       "name": "Generate a plan patch in dry-run",
       "instruction": "Generate a patch plan from the drift report. The plan is bound to the exact scan SHA-256 and lists per-file operations. Dry-run is the default; no files are written.",
       "actionType": "deterministic_automation",
-      "command": "python -m sop diff --standard {STANDARD_PATH} --target {TARGET_PATH} --json",
+      "command": "python -m sop diff --standard {STANDARD_PATH} --root {TARGET_PATH}",
       "requiredEvidence": ["plan JSON with per-file SHA-256"],
       "postconditions": ["The plan is produced without writing any file.", "Each planned operation is bound to a source SHA-256."],
       "onFailure": {"action": "abort"}
@@ -41,7 +41,7 @@
       "name": "Validate managed paths and safety constraints",
       "instruction": "Validate the plan against managed-path rules: reject traversal, .git, symlinks and paths outside the managed set. Reject any operation that would modify a forbidden path.",
       "actionType": "validation_check",
-      "command": "python -m sop patch --standard {STANDARD_PATH} --target {TARGET_PATH} --dry-run --json",
+      "command": "python -m sop patch --standard {STANDARD_PATH} --root {TARGET_PATH}",
       "requiredEvidence": ["preflight validation output"],
       "postconditions": ["No planned operation targets a forbidden path.", "No traversal or symlink is present.", "All planned paths are in the managed set."],
       "onFailure": {"action": "abort"}
@@ -51,7 +51,7 @@
       "name": "Apply the patch with explicit write authorisation",
       "instruction": "Only after dry-run validation passes, apply the patch with --write. Each file is written atomically and verified by re-reading and comparing SHA-256. The batch is not a multi-file transaction; a failure on one file does not roll back others.",
       "actionType": "deterministic_automation",
-      "command": "python -m sop patch --standard {STANDARD_PATH} --target {TARGET_PATH} --write --json",
+      "command": "python -m sop sync --standard {STANDARD_PATH} --root {TARGET_PATH} --write",
       "requiredEvidence": ["per-file write result", "per-file verify SHA-256"],
       "postconditions": ["Every written file matches the source SHA-256 on re-read.", "No file outside the plan was modified."],
       "onFailure": {"action": "abort"}
@@ -61,7 +61,7 @@
       "name": "Verify the target after sync",
       "instruction": "Run the scanner again to confirm zero drift on all managed paths. Any remaining drift indicates a partial failure that must be documented.",
       "actionType": "validation_check",
-      "command": "python -m sop verify --standard {STANDARD_PATH} --target {TARGET_PATH} --json",
+      "command": "python -m sop verify --standard {STANDARD_PATH} --root {TARGET_PATH}",
       "requiredEvidence": ["verify output with zero drift"],
       "postconditions": ["The scanner reports zero drift on all managed paths.", "Any partial failure is documented with the affected file list."],
       "onFailure": {"action": "escalate_to_human"}

@@ -77,11 +77,21 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "scan":
         _dump(report.to_dict())
         return 0
-    if args.command in {"diff", "patch"}:
+    if args.command == "diff":
         _dump(
             {
                 "summary": SOPDiffer.calculate_drift_summary(report.findings),
                 "operations": [operation.to_dict() for operation in operations],
+            }
+        )
+        return 0
+    if args.command == "patch":
+        result = SOPPatcher.apply_all(operations)
+        _dump(
+            {
+                "summary": SOPDiffer.calculate_drift_summary(report.findings),
+                "operations": [operation.to_dict() for operation in operations],
+                "preflight": result,
             }
         )
         return 0

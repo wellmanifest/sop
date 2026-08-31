@@ -1,0 +1,94 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-011",
+  "summary": "Align cross-sync SOP commands with the local CLI",
+  "workstream": "integration",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-011/**",
+    "project/TICKETS.md",
+    "src/sop/cli.py",
+    "src/sop/__main__.py",
+    "spec/sop-cross-sync.yaml",
+    "tests/test_sync.py",
+    "tests/test_sop_spec_slices.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".githooks/**",
+    ".governance/**",
+    ".github/**",
+    "schemas/**",
+    "docs/**",
+    "tests/dual_llm/**"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "47cf1f5c1857c6718eab12505a86ea79280d3abf",
+    "targetBranch": "main",
+    "outcome": "Make every command declared by sop-cross-sync executable by the local CLI, preserve dry-run-by-default behavior, add module invocation and deterministic contract tests, then publish through validator-agent.",
+    "nonGoals": [
+      "Add network access, organization-wide synchronization, or external side effects",
+      "Change the SOP schema or other canonical procedures",
+      "Implement Dual-LLM orchestration, packaging metadata, or a release"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 7,
+      "maxAffectedComponents": 3,
+      "maxPublicInterfaceChanges": 2,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep the existing local runtime command vocabulary as canonical: --root selects the target scope, patch is dry-run preflight, sync --write is the only write operation, and JSON is the sole output format. Add sop.__main__ so the procedure's python -m sop invocation works after installation.",
+      "components": [
+        {
+          "name": "sop-contract",
+          "paths": ["spec/sop-cross-sync.yaml"]
+        },
+        {
+          "name": "conformance-runtime",
+          "paths": ["src/sop/cli.py", "src/sop/__main__.py"]
+        },
+        {
+          "name": "conformance-tests",
+          "paths": ["tests/test_sync.py", "tests/test_sop_spec_slices.py"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "sop-cross-sync commands use the runtime's supported --root and sync --write interface",
+        "The installed package supports python -m sop"
+      ],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Discard the unmerged ticket branch and retain the previous specification and CLI."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": ["python -m unittest tests.test_sync tests.test_sop_spec_slices -v"],
+        "evidence": "terminal result digest in the pull request test plan"
+      },
+      {
+        "criterion": "AC-06",
+        "commands": ["project\\governance-check.bat", "python -m unittest discover -s tests -p test_*.py"],
+        "evidence": "terminal result digest in the pull request test plan"
+      }
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from src.sop import __main__ as module_entry
 from src.sop.cli import main
 from src.sop.engine import SOPDiffer, SOPPatcher, UnsafePathError
 from src.sop.models import PatchOperation
@@ -128,6 +129,26 @@ class TestLocalSync(unittest.TestCase):
                     PatchOperation(str(self.target), relative, str(source), sha256_file(source)),
                     write=True,
                 )
+
+    def test_module_entry_delegates_to_cli(self):
+        self.assertIs(module_entry.main, main)
+
+    def test_cli_patch_preflights_without_writing(self):
+        output = io.StringIO()
+        args = [
+            "patch",
+            "--root",
+            str(self.target),
+            "--standard",
+            str(self.standard),
+            "--managed-path",
+            "rules.txt",
+        ]
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(main(args), 0)
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["preflight"], {"planned": 1, "skipped": 0})
+        self.assertFalse((self.target / "rules.txt").exists())
 
     def test_cli_sync_is_dry_run_by_default_and_rejects_network(self):
         output = io.StringIO()
