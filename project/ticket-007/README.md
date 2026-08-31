@@ -22,9 +22,9 @@ workstream.
 ## Acceptance criteria
 
 - [x] AC-01: `project/ticket-006/README.md` status is `DONE` and workflow state is `DONE`
-- [ ] AC-02: `./project/governance-check.sh` passes
-- [ ] AC-03: `CHANGELOG.md` has an entry for ticket-006 spec slices
-- [ ] AC-04: Stale local branches from merged tickets are cleaned up
+- [x] AC-02: `./project/governance-check.sh` passes
+- [x] AC-03: `CHANGELOG.md` has an entry for ticket-006 spec slices
+- [x] AC-04: Stale local branches from merged tickets are cleaned up
 
 ## Participants
 

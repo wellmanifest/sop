@@ -17,12 +17,12 @@ and benchmark implementation remain out of scope.
 
 ## Acceptance criteria
 
-- [ ] AC-01: ticket-009 is recorded as DONE/DONE after its trusted merge.
-- [ ] AC-02: ticket-007 acceptance criteria reflect their completed evidence.
-- [ ] AC-03: project/TICKETS.md indexes tickets 009 and 010.
-- [ ] AC-04: TODO.md and CHANGELOG.md accurately describe merged PRs #7-#9 and remaining work.
-- [ ] AC-05: `project\\governance-check.bat` passes.
-- [ ] AC-06: `python -m unittest discover -s tests -p "test_*.py"` passes.
+- [x] AC-01: ticket-009 is recorded as DONE/DONE after its trusted merge.
+- [x] AC-02: ticket-007 acceptance criteria reflect their completed evidence.
+- [x] AC-03: project/TICKETS.md indexes tickets 009 and 010.
+- [x] AC-04: TODO.md and CHANGELOG.md accurately describe merged PRs #7-#9 and remaining work.
+- [x] AC-05: `project\\governance-check.bat` passes.
+- [x] AC-06: `python -m unittest discover -s tests -p "test_*.py"` passes.
 - [ ] AC-07: The exact-head PR is approved and merged by validator-agent.
 
 ## Participants
