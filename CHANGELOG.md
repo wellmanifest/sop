@@ -1,25 +1,19 @@
 ﻿# CHANGELOG
 
-## [Unreleased]
+## [0.1.0] - 2026-08-31
+
+### Dodano
+- Utworzono publiczne repozytorium `wellmanifest/sop` i strukturę governance.
+- Dodano zamknięty kontrakt `wellmanifest.sop/v1`, schemat i cztery kanoniczne procedury.
+- Dodano dependency-free lokalny runtime scan/diff/patch/sync/verify z dry-run default, jawnym `--write`, atomowym zapisem i weryfikacją SHA-256.
+- Dodano ochronę managed paths, traversal, `.git`, symlinków, worktrees i stale planów.
+- Dodano architekturę oraz metodologię Dual-LLM benchmarking.
+- Dodano manifesty ośmiu scenariuszy, prompt runner/auditor, deterministic oracle, receipt schemas i testy dry-run (ticket-009, PR #9).
+- Dodano konsolową komendę `sop`, uruchamianie `python -m sop` i instrukcje operatorskie (ticket-013, PR #13).
+- Dodano licencję Apache-2.0 (ticket-014).
+
 ### Naprawiono
-- Przywrócono executable mode (100755) na `.githooks/pre-commit` (ticket-003, PR #3)
-- Uzgodniono komendy `sop-cross-sync` z wykonywalnym CLI i dodano `python -m sop` (ticket-011, PR #11).
-
-### Pakiet
-- Dodano konsolową komendę `sop`, wyrównano metadane v0.1.0 i uzupełniono instrukcje operatorskie (ticket-013).
-
-### Dodano
-- SOP v1 foundation: `wellmanifest.sop/v1` JSON Schema, procedura `sop-new-ticket`, lokalny scanner/diff/patch/sync/verify runtime (ticket-001, PR #1)
-- Trzy spec slices: `sop-subactor-repair.yaml` (bounded repair, stop-on-failure), `sop-validator-dispatch.yaml` (exact-head freeze, trusted merge), `sop-cross-sync.yaml` (dry-run default cross-repo sync) (ticket-006, PR #6)
-- Architektura i metodologia Dual-LLM benchmarking (`docs/ARCHITECTURE.md`, `docs/DUAL_LLM_BENCHMARKING.md`)
-- Testy: validation, worktrees, drift, dry-run/write/verify, stale plans, CLI, managed-path validation, symlink safety, spec slices positive/negative
-- Infrastruktura Dual-LLM: manifesty ośmiu scenariuszy, prompt runner/auditor, deterministic oracle, receipt schemas i testy dry-run (ticket-009, PR #9)
-
-### Zmieniono
-- Zaktualizowano `spec/sop-procedures.yaml` katalog: wszystkie cztery procedury w `procedures`, puste `pendingDependentSlice` (ticket-008, PR #8)
-- Uzgodniono statusy scalonych ticketów, indeks i roadmapę po merge PR #9 (ticket-010)
-
-## [0.1.0] - 2026-08-24
-### Dodano
-- Utworzenie publicznego repozytorium wellmanifest/sop
-- Inicjalizacja dokumentacji bazowej: README.md, TODO.md, VERSION, .gitignore
+- Przywrócono executable mode na `.githooks/pre-commit` (ticket-003, PR #3).
+- Uzupełniono katalog `spec/sop-procedures.yaml` o wszystkie cztery procedury (ticket-008, PR #8).
+- Uzgodniono komendy `sop-cross-sync` z wykonywalnym CLI i zachowano write wyłącznie przez `sync --write` (ticket-011, PR #11).
+- Zaktualizowano adoption governance do finalnego `wellmanifest/new-project` v0.19.15 (ticket-012, PR #12).
