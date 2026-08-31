@@ -3,6 +3,10 @@
 ## [Unreleased]
 ### Naprawiono
 - Przywrócono executable mode (100755) na `.githooks/pre-commit` (ticket-003, PR #3)
+- Uzgodniono komendy `sop-cross-sync` z wykonywalnym CLI i dodano `python -m sop` (ticket-011, PR #11).
+
+### Pakiet
+- Dodano konsolową komendę `sop`, wyrównano metadane v0.1.0 i uzupełniono instrukcje operatorskie (ticket-013).
 
 ### Dodano
 - SOP v1 foundation: `wellmanifest.sop/v1` JSON Schema, procedura `sop-new-ticket`, lokalny scanner/diff/patch/sync/verify runtime (ticket-001, PR #1)

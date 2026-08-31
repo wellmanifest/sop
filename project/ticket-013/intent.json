@@ -1,0 +1,89 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-013",
+  "summary": "Complete installable SOP package and operator documentation",
+  "workstream": "governance",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-013/**",
+    "project/TICKETS.md",
+    "pyproject.toml",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".governance/**",
+    ".github/**",
+    ".githooks/**",
+    "src/**",
+    "tests/**",
+    "schemas/**",
+    "spec/**",
+    "docs/**"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "8a2a76586e197e65190a9a02742c5becec4e082c",
+    "targetBranch": "main",
+    "outcome": "Publish an operator-usable v0.1.0 Python package contract with a sop console entry point, aligned version metadata, tested installation instructions and honest runtime/benchmark boundaries.",
+    "nonGoals": [
+      "Publish a package registry release or Git tag in this ticket",
+      "Modify SOP runtime behavior, specifications, tests, schemas, workflows, or adopted governance",
+      "Execute paid model benchmarks or organization-wide rollout"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 20,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 1,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep the existing src-layout package and dependency-free runtime. Add the console entry point in pyproject metadata, align the existing v0.1.0 identifiers, and document only behavior verified by current tests and smoke commands.",
+      "components": [
+        {
+          "name": "python-package",
+          "paths": ["pyproject.toml"]
+        },
+        {
+          "name": "operator-documentation",
+          "paths": ["README.md", "CHANGELOG.md", "project/ticket-013/**", "project/TICKETS.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "Installed distributions expose the sop console command"
+      ],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert the unmerged package metadata and documentation commit."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-04",
+        "commands": ["python -m pip wheel . --no-deps", "sop --help", "python -m sop --help"],
+        "evidence": "Clean temporary-environment smoke output in the pull request test plan."
+      },
+      {
+        "criterion": "AC-05",
+        "commands": ["project\\governance-check.bat", "python -m unittest discover -s tests -p test_*.py"],
+        "evidence": "Governance and unittest summaries in the pull request test plan."
+      }
+    ]
+  }
+}
