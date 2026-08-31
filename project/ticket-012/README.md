@@ -21,11 +21,11 @@ governance and integration workstreams under the old adopted lifecycle.
 
 ## Acceptance criteria
 
-- [ ] AC-01: The adoption lock identifies new-project v0.19.15 at the exact published SHA.
-- [ ] AC-02: Every managed file matches its regenerated lock digest.
-- [ ] AC-03: Existing SOP source, specifications and tests are unchanged by the generator.
+- [x] AC-01: The adoption lock identifies new-project v0.19.15 at the exact published SHA.
+- [x] AC-02: Every managed file matches its regenerated lock digest.
+- [x] AC-03: Existing SOP source, specifications and tests are unchanged by the generator.
 - [ ] AC-04: The managed governance gate passes after the upgrade.
-- [ ] AC-05: The complete SOP unittest suite passes.
+- [x] AC-05: The complete SOP unittest suite passes.
 - [ ] AC-06: The exact-head PR is approved and merged by validator-agent.
 
 ## Participants

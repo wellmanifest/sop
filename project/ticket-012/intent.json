@@ -24,7 +24,8 @@
     "pyproject.toml",
     "scripts/install-agent-hosts.sh",
     "scripts/runtime.sh",
-    "worktree-guard.yaml"
+    "worktree-guard.yaml",
+    "wellmanifest_governance.py"
   ],
   "forbiddenPaths": [
     "project/ticket-*/user-*.md",
@@ -36,7 +37,7 @@
   ],
   "stacks": [],
   "dependsOn": [],
-  "conflictsWith": ["ticket-010"],
+  "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
     "acceptedBaseSha": "2081a07c0916310fffb8f8d7b535c1a4a5bd8b66",
@@ -49,6 +50,11 @@
     ],
     "complexity": "L",
     "estimatedMinutes": 30,
+    "standardAdoption": {
+      "sourceRepository": "wellmanifest/new-project",
+      "fromRevision": "01397097ac53a01b2dd544f0b5908d22d1b526d5",
+      "toRevision": "efdb30aec5985d49cbf19bb18012524b941ba3ef"
+    },
     "budgets": {
       "maxImplementationFiles": 15,
       "maxAffectedComponents": 3,
@@ -69,7 +75,7 @@
         },
         {
           "name": "managed-governance-entrypoints",
-          "paths": ["project/**", "scripts/install-agent-hosts.sh", "scripts/runtime.sh", "goal.yaml", "worktree-guard.yaml", "pyproject.toml", "TODO.md"]
+          "paths": ["project/**", "scripts/install-agent-hosts.sh", "scripts/runtime.sh", "goal.yaml", "worktree-guard.yaml", "wellmanifest_governance.py", "pyproject.toml", "TODO.md"]
         }
       ],
       "responsibilityChanges": false,

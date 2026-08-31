@@ -24,6 +24,10 @@ single forced allocation needed to perform this upgrade.
 
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION.
 - Recorded human authorization for `--force-new` due to stale merged reservations.
+- Installed Goal from the clean local `semcod/goal` checkout.
+- Verified the final published v0.19.15 release and ran its adoption generator in upgrade mode.
+- Regenerated the complete managed package and lock without hand-editing managed files.
+- Closed the stale merged ticket-010 and ticket-011 file projections.
 
 ## Blockers
 
