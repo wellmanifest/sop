@@ -18,12 +18,12 @@ safety.
 
 ## Acceptance criteria
 
-- [ ] AC-01: `python -m sop` delegates to the local CLI entry point.
-- [ ] AC-02: Every command in `sop-cross-sync.yaml` uses supported CLI commands and arguments.
-- [ ] AC-03: `patch` performs full dry-run preflight and never writes.
-- [ ] AC-04: The explicit write step uses `sync --write`; all other steps remain read-only.
-- [ ] AC-05: Contract tests parse all five SOP commands and verify patch/write behavior.
-- [ ] AC-06: `project\\governance-check.bat` and the complete unittest suite pass.
+- [x] AC-01: `python -m sop` delegates to the local CLI entry point.
+- [x] AC-02: Every command in `sop-cross-sync.yaml` uses supported CLI commands and arguments.
+- [x] AC-03: `patch` performs full dry-run preflight and never writes.
+- [x] AC-04: The explicit write step uses `sync --write`; all other steps remain read-only.
+- [x] AC-05: Contract tests parse all five SOP commands and verify patch/write behavior.
+- [x] AC-06: `project\\governance-check.bat` and the complete unittest suite pass.
 - [ ] AC-07: The exact-head PR is approved and merged by validator-agent.
 
 ## Participants

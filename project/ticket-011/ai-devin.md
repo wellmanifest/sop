@@ -23,6 +23,10 @@ The user authorized autonomous implementation and protected publication today.
 
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION
   from the request to execute this work.
+- Added the `python -m sop` module entry point.
+- Made `patch` execute deterministic dry-run preflight without writing.
+- Aligned all five cross-sync commands with `--root` and `sync --write`.
+- Added parser and behavior regression tests for the repaired contract.
 
 ## Blockers
 

@@ -1,7 +1,9 @@
+import shlex
 import unittest
 from pathlib import Path
 
-from src.sop.validator import SCHEMA_ID, SOPValidationError, SOPValidator
+from src.sop.cli import build_parser
+from src.sop.validator import SCHEMA_ID, SOPValidator
 
 ROOT = Path(__file__).resolve().parents[1]
 NEW_PROCEDURES = (
@@ -46,6 +48,24 @@ class TestNewSpecSlices(unittest.TestCase):
         self.assertTrue(any("dry-run" in n for n in step_names))
         self.assertTrue(any("apply" in n for n in step_names))
         self.assertTrue(any("verify" in n for n in step_names))
+
+    def test_cross_sync_commands_match_cli_contract(self):
+        data = SOPValidator.load(ROOT / "spec" / "sop-cross-sync.yaml")
+        commands = [step["command"] for step in data["steps"]]
+        for command in commands:
+            with self.subTest(command=command):
+                parts = shlex.split(command)
+                self.assertEqual(parts[:3], ["python", "-m", "sop"])
+                arguments = [
+                    part.replace("{STANDARD_PATH}", str(ROOT)).replace(
+                        "{TARGET_PATH}", str(ROOT)
+                    )
+                    for part in parts[3:]
+                ]
+                build_parser().parse_args(arguments)
+        write_commands = [command for command in commands if "--write" in command]
+        self.assertEqual(len(write_commands), 1)
+        self.assertIn("python -m sop sync", write_commands[0])
 
     def test_procedures_catalog_lists_all_four(self):
         import json

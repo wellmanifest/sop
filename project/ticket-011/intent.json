@@ -27,7 +27,7 @@
     "tests/dual_llm/**"
   ],
   "stacks": [],
-  "dependsOn": ["ticket-010"],
+  "dependsOn": [],
   "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
