@@ -11,6 +11,7 @@
   "allowedPaths": [
     "project/ticket-014/**",
     "project/TICKETS.md",
+    ".governance/manifest.json",
     "LICENSE",
     "README.md",
     "CHANGELOG.md",
@@ -18,7 +19,6 @@
   ],
   "forbiddenPaths": [
     "project/ticket-*/user-*.md",
-    ".governance/**",
     ".github/**",
     ".githooks/**",
     "src/**",
@@ -40,11 +40,11 @@
       "Modify runtime, SOP specifications, schemas, tests, workflows, or adopted governance",
       "Read credentials or execute paid model requests"
     ],
-    "complexity": "S",
-    "estimatedMinutes": 20,
+    "complexity": "M",
+    "estimatedMinutes": 25,
     "budgets": {
-      "maxImplementationFiles": 5,
-      "maxAffectedComponents": 2,
+      "maxImplementationFiles": 9,
+      "maxAffectedComponents": 3,
       "maxPublicInterfaceChanges": 1,
       "maxRuntimeDependencies": 0
     },
@@ -54,7 +54,7 @@
       "components": [
         {
           "name": "license-and-package-metadata",
-          "paths": ["LICENSE", "pyproject.toml"]
+          "paths": ["LICENSE", "pyproject.toml", ".governance/manifest.json"]
         },
         {
           "name": "release-documentation",

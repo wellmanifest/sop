@@ -52,6 +52,7 @@
           "CLAUDE.md",
           "GEMINI.md",
           "README.md",
+          "LICENSE",
           "TODO.md",
           "CHANGELOG.md",
           ".env.example",

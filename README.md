@@ -143,3 +143,7 @@ with `project/new-ticket.sh`, work in the canonical ticket worktree, run the
 managed gate, and publish only through exact-head validator-agent review.
 
 Project status and remaining external work are tracked in [TODO](TODO.md).
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
