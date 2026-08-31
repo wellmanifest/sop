@@ -1,0 +1,91 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-010",
+  "summary": "Reconcile merged SOP tickets and project status",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P1",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-010/**",
+    "project/ticket-009/README.md",
+    "project/ticket-007/README.md",
+    "project/TICKETS.md",
+    "TODO.md",
+    "CHANGELOG.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".githooks/**",
+    ".governance/**",
+    ".github/**",
+    "src/**",
+    "tests/**",
+    "schemas/**",
+    "spec/**",
+    "docs/**"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-009"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "095b59177222c2afbcd82147bef63551669c5696",
+    "targetBranch": "main",
+    "outcome": "Reconcile governance records and project status after the trusted merge of ticket-009 / PR #9, then publish through exact-head validator-agent review.",
+    "nonGoals": [
+      "Modify SOP specifications, runtime source, tests, schemas, workflows, or governance policy",
+      "Execute model benchmarks or cross-repository rollout",
+      "Create release tags or publish packages"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 20,
+    "budgets": {
+      "maxImplementationFiles": 9,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Use a governance-only reconciliation slice. Preserve historical evidence, update only status/index/roadmap/changelog records, and leave implementation and integration-owned documentation unchanged.",
+      "components": [
+        {
+          "name": "governance-records",
+          "paths": [
+            "project/ticket-010/**",
+            "project/ticket-009/README.md",
+            "project/ticket-007/README.md",
+            "project/TICKETS.md",
+            "TODO.md",
+            "CHANGELOG.md"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Discard the unmerged ticket branch and retain the integrated main state."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": ["project\\governance-check.bat"],
+        "evidence": "terminal result digest in the pull request test plan"
+      },
+      {
+        "criterion": "AC-06",
+        "commands": ["python -m unittest discover -s tests -p test_*.py"],
+        "evidence": "terminal result digest in the pull request test plan"
+      }
+    ]
+  }
+}
