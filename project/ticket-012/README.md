@@ -2,8 +2,8 @@
 
 - **ID**: ticket-012
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-31
 
 ## Goal and scope
@@ -24,9 +24,9 @@ governance and integration workstreams under the old adopted lifecycle.
 - [x] AC-01: The adoption lock identifies new-project v0.19.15 at the exact published SHA.
 - [x] AC-02: Every managed file matches its regenerated lock digest.
 - [x] AC-03: Existing SOP source, specifications and tests are unchanged by the generator.
-- [ ] AC-04: The managed governance gate passes after the upgrade.
+- [x] AC-04: The managed governance gate passes after the upgrade.
 - [x] AC-05: The complete SOP unittest suite passes.
-- [ ] AC-06: The exact-head PR is approved and merged by validator-agent.
+- [x] AC-06: The exact-head PR is approved and merged by validator-agent.
 
 ## Participants
 
