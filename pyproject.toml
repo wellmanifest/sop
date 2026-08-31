@@ -1,9 +1,13 @@
 [project]
 name = "wellmanifest-sop"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Wellmanifest Standard Operating Procedure (SOP) standard, sync runtime and validation"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
+
+[project.scripts]
+sop = "sop.cli:main"
 
 [tool.ruff]
 line-length = 100
