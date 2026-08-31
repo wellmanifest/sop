@@ -31,7 +31,7 @@
   "conflictsWith": [],
   "integrationTicket": null,
   "delivery": {
-    "acceptedBaseSha": "47cf1f56117139913a0230909552ca80f7d69dc8",
+    "acceptedBaseSha": "47cf1f5c1857c6718eab12505a86ea79280d3abf",
     "targetBranch": "main",
     "outcome": "Make every command declared by sop-cross-sync executable by the local CLI, preserve dry-run-by-default behavior, add module invocation and deterministic contract tests, then publish through validator-agent.",
     "nonGoals": [
