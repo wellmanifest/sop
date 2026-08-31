@@ -1,0 +1,90 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-014",
+  "summary": "License and publish SOP v0.1.0 release",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-014/**",
+    "project/TICKETS.md",
+    ".governance/manifest.json",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "pyproject.toml"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    ".github/**",
+    ".githooks/**",
+    "src/**",
+    "tests/**",
+    "schemas/**",
+    "spec/**",
+    "docs/**"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "d1eda3026a169e87d627a3e0a34b16890d00b07b",
+    "targetBranch": "main",
+    "outcome": "Apply the human-selected Apache-2.0 license, finalize truthful v0.1.0 metadata and changelog, merge through exact-head validator-agent review, and publish the final GitHub Release v0.1.0.",
+    "nonGoals": [
+      "Publish to PyPI or any package registry",
+      "Modify runtime, SOP specifications, schemas, tests, workflows, or adopted governance",
+      "Read credentials or execute paid model requests"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 25,
+    "budgets": {
+      "maxImplementationFiles": 9,
+      "maxAffectedComponents": 3,
+      "maxPublicInterfaceChanges": 1,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Use Apache-2.0 as selected by the human owner, declare its SPDX identifier in Python package metadata, consolidate the unreleased history into the first final v0.1.0 release, and publish only after trusted exact-head merge.",
+      "components": [
+        {
+          "name": "license-and-package-metadata",
+          "paths": ["LICENSE", "pyproject.toml", ".governance/manifest.json"]
+        },
+        {
+          "name": "release-documentation",
+          "paths": ["README.md", "CHANGELOG.md", "project/ticket-014/**", "project/TICKETS.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "The public distribution is licensed under Apache-2.0"
+      ],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Discard the unmerged branch; after publication, issue a corrective release rather than rewriting the published tag."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-03",
+        "commands": ["project\\governance-check.bat", "python -m unittest discover -s tests -p test_*.py", "python -m ruff check src", "python -m pip wheel . --no-deps"],
+        "evidence": "Release gate summaries in the pull request test plan."
+      },
+      {
+        "criterion": "AC-05",
+        "commands": ["gh release view v0.1.0"],
+        "evidence": "Final GitHub Release and annotated tag identify the merged commit."
+      }
+    ]
+  }
+}
